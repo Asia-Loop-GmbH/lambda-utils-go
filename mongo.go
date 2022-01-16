@@ -8,23 +8,23 @@ import (
 	"log"
 )
 
-func NewMongoAdminClient(ctx context.Context, env string) (*mongo.Client, error) {
+func NewMongoAdminClient(ctx context.Context, env string) (*mongo.Client, *string, error) {
 
 	mongoHost, err := GetSSMParameter("all", "/mongo/host", false)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	mongoUsername, err := GetSSMParameter(env, "/admin/mongo/username", false)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	mongoPassword, err := GetSSMParameter(env, "/admin/mongo/password", true)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	mongoDatabase, err := GetSSMParameter(env, "/admin/mongo/database", false)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	log.Printf("mongo host = %s, mongo db = %s", *mongoHost, *mongoDatabase)
@@ -38,12 +38,12 @@ func NewMongoAdminClient(ctx context.Context, env string) (*mongo.Client, error)
 		}),
 	)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	err = client.Connect(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return client, nil
+	return client, mongoDatabase, nil
 }
