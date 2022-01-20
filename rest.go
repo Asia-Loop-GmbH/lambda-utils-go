@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func HTTPErrorResponse(status int, request events.APIGatewayProxyRequest, err error) *events.APIGatewayProxyResponse {
+func HTTPErrorResponse(status int, request *events.APIGatewayProxyRequest, err error) *events.APIGatewayProxyResponse {
 	body := admin.HttpErrorBody{
 		Message:     err.Error(),
 		Method:      request.HTTPMethod,
