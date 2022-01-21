@@ -6,6 +6,7 @@ require (
 	github.com/asia-loop-gmbh/lambda-types-go v1.0.6
 	github.com/aws/aws-lambda-go v1.28.0
 	github.com/aws/aws-sdk-go v1.42.35
+	github.com/evanphx/json-patch v0.5.2
 	go.mongodb.org/mongo-driver v1.8.2
 )
 
