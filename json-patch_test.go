@@ -4,7 +4,9 @@ import (
 	utils "github.com/asia-loop-gmbh/lambda-utils-go"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"testing"
+	"time"
 )
 
 func TestMongoUpdateFromJSONPatch(t *testing.T) {
@@ -26,7 +28,8 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 		Value: true,
 	}
 	patches := []utils.JSONPatch{patch1, patch2, patch3}
-	update, err := utils.MongoUpdateFromJSONPatch(&patches)
+	now := time.Now()
+	update, err := utils.MongoUpdateFromJSONPatch(&patches, &now)
 
 	Expect(err).To(BeNil())
 	Expect(update).To(Equal(bson.A{
@@ -43,6 +46,11 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 		bson.M{
 			"$set": bson.M{
 				"a.c.e": true,
+			},
+		},
+		bson.M{
+			"$set": bson.M{
+				"updatedAt": primitive.NewDateTimeFromTime(now),
 			},
 		},
 	}))
