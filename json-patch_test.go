@@ -2,6 +2,7 @@ package lambda_utils_go_test
 
 import (
 	utils "github.com/asia-loop-gmbh/lambda-utils-go"
+	"github.com/asia-loop-gmbh/lambda-utils-go/test"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestMongoUpdateFromJSONPatch(t *testing.T) {
-	RegisterFailHandler(failedHandler(t))
+	RegisterFailHandler(test.FailedHandler(t))
 
 	patch1 := utils.JSONPatch{
 		OP:    "replace",
