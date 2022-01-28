@@ -1,14 +1,15 @@
-package lambda_utils_go
+package service_common
 
 import (
 	"context"
 	"github.com/asia-loop-gmbh/lambda-types-go/admin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
 )
 
 func GetGlobalConfig(stage string) (*admin.GlobalConfig, error) {
-	client, database, err := NewMongoAdminClient(context.Background(), stage)
+	client, database, err := mongo.NewMongoAdminClient(context.Background(), stage)
 	if err != nil {
 		return nil, err
 	}

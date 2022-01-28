@@ -1,8 +1,9 @@
-package lambda_utils_go
+package mongo
 
 import (
 	"context"
 	"fmt"
+	"github.com/asia-loop-gmbh/lambda-utils-go/aws"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -10,19 +11,19 @@ import (
 
 func NewMongoAdminClient(ctx context.Context, env string) (*mongo.Client, *string, error) {
 
-	mongoHost, err := GetSSMParameter("all", "/mongo/host", false)
+	mongoHost, err := aws.GetSSMParameter("all", "/mongo/host", false)
 	if err != nil {
 		return nil, nil, err
 	}
-	mongoUsername, err := GetSSMParameter(env, "/admin/mongo/username", false)
+	mongoUsername, err := aws.GetSSMParameter(env, "/admin/mongo/username", false)
 	if err != nil {
 		return nil, nil, err
 	}
-	mongoPassword, err := GetSSMParameter(env, "/admin/mongo/password", true)
+	mongoPassword, err := aws.GetSSMParameter(env, "/admin/mongo/password", true)
 	if err != nil {
 		return nil, nil, err
 	}
-	mongoDatabase, err := GetSSMParameter(env, "/admin/mongo/database", false)
+	mongoDatabase, err := aws.GetSSMParameter(env, "/admin/mongo/database", false)
 	if err != nil {
 		return nil, nil, err
 	}

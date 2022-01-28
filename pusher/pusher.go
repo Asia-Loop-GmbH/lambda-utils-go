@@ -1,17 +1,20 @@
-package lambda_utils_go
+package pusher
 
-import "github.com/pusher/pusher-http-go/v5"
+import (
+	"github.com/asia-loop-gmbh/lambda-utils-go/aws"
+	"github.com/pusher/pusher-http-go/v5"
+)
 
 func NewPusherClient(stage *string) (*pusher.Client, error) {
-	app, err := GetSSMParameter(*stage, "/pusher/app", false)
+	app, err := aws.GetSSMParameter(*stage, "/pusher/app", false)
 	if err != nil {
 		return nil, err
 	}
-	key, err := GetSSMParameter(*stage, "/pusher/key", false)
+	key, err := aws.GetSSMParameter(*stage, "/pusher/key", false)
 	if err != nil {
 		return nil, err
 	}
-	secret, err := GetSSMParameter(*stage, "/pusher/secret", true)
+	secret, err := aws.GetSSMParameter(*stage, "/pusher/secret", true)
 	if err != nil {
 		return nil, err
 	}

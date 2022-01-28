@@ -1,4 +1,4 @@
-package lambda_utils_go
+package mongo
 
 import (
 	"fmt"

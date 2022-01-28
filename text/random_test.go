@@ -1,8 +1,8 @@
-package lambda_utils_go_test
+package text_test
 
 import (
-	utils "github.com/asia-loop-gmbh/lambda-utils-go"
 	"github.com/asia-loop-gmbh/lambda-utils-go/test"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/text"
 	. "github.com/onsi/gomega"
 	"log"
 	"testing"

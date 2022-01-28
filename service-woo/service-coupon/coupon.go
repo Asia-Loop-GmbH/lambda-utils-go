@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/asia-loop-gmbh/lambda-types-go/woo"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/number"
 	servicewoo "github.com/asia-loop-gmbh/lambda-utils-go/service-woo"
 	"io/ioutil"
 	"log"

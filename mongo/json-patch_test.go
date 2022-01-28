@@ -1,7 +1,7 @@
-package lambda_utils_go_test
+package mongo_test
 
 import (
-	utils "github.com/asia-loop-gmbh/lambda-utils-go"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/mongo"
 	"github.com/asia-loop-gmbh/lambda-utils-go/test"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"

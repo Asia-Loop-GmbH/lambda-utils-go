@@ -2,7 +2,7 @@ package service_woo
 
 import (
 	"fmt"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/aws"
 	"strings"
 )
 
