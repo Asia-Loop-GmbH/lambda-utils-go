@@ -5,13 +5,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/pkg/errors"
 	"log"
 	"os"
 	"strings"
 )
 
 func GetSSMParameter(env, name string, decryption bool) (*string, error) {
-	if fromEnvVar, ok := getFromEnVar(env, name); ok {
+	if fromEnvVar, ok := getFromEnvVar(env, name); ok {
 		log.Printf("get [%s %s] from environment variable", env, name)
 		return &fromEnvVar, nil
 	}
@@ -20,19 +21,20 @@ func GetSSMParameter(env, name string, decryption bool) (*string, error) {
 		return nil, err
 	}
 	ssmService := ssm.New(awsSession)
+	parameterName := aws.String("/" + env + name)
 	getParameter, err := ssmService.GetParameter(&ssm.GetParameterInput{
-		Name:           aws.String("/" + env + name),
+		Name:           parameterName,
 		WithDecryption: aws.Bool(decryption),
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, fmt.Sprintf("could not find ssm parameter: %s", *parameterName))
 	}
 	log.Printf("get [%s %s] from aws ssm", env, name)
 	return getParameter.Parameter.Value, nil
 }
 
-func getFromEnVar(env, name string) (string, bool) {
-	name = strings.ReplaceAll(strings.ToUpper(name), "/", "_")
-	envKey := fmt.Sprintf("AL_SSM_%s_%s", env, name)
+func getFromEnvVar(stage, name string) (string, bool) {
+	name = strings.ReplaceAll(name, "/", "_")
+	envKey := fmt.Sprintf("AL_SSM_%s%s", strings.ToUpper(stage), strings.ToUpper(name))
 	return os.LookupEnv(envKey)
 }
