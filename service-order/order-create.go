@@ -141,7 +141,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 			"telephone": telephone,
 		})
 		if err != nil {
-			log.Printf("could not update customer telphone to: %s", telephone)
+			log.Printf("could not update customer telphone to %s: %s", telephone, err)
 		} else {
 			log.Printf("customer telphone updated: %s", telephone)
 		}
@@ -150,7 +150,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 		"email": email,
 	})
 	if err != nil {
-		log.Printf("could not update customer email to: %s", email)
+		log.Printf("could not update customer email to %s: %s", email, err)
 	} else {
 		log.Printf("customer email updated: %s", email)
 	}
