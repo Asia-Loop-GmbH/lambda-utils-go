@@ -137,7 +137,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 
 	log.Printf("order created: %s", orderOptions.OrderID)
 	if customer.Telephone == "" {
-		_, err := collectionOrder.UpdateByID(context.Background(), customer.ID, bson.M{
+		_, err := collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
 			"telephone": telephone,
 		})
 		if err != nil {
@@ -146,7 +146,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 			log.Printf("customer telphone updated: %s", telephone)
 		}
 	}
-	_, err = collectionOrder.UpdateByID(context.Background(), customer.ID, bson.M{
+	_, err = collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
 		"email": email,
 	})
 	if err != nil {
