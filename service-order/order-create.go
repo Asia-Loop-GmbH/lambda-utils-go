@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
+	"time"
 )
 
 func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
@@ -76,6 +77,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 			text.RandomString(2, false, true, false),
 			text.RandomString(6, false, false, true),
 		)
+		customerCreatedAt := time.Now()
 		newCustomer := admin.Customer{
 			ID:           primitive.NewObjectID(),
 			FirstName:    firstName,
@@ -88,6 +90,8 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 			City:         city,
 			Telephone:    telephone,
 			Email:        email,
+			CreatedAt:    customerCreatedAt,
+			UpdatedAt:    customerCreatedAt,
 		}
 		if _, err := collectionCustomer.InsertOne(context.Background(), newCustomer); err != nil {
 			return nil, err
@@ -98,6 +102,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 
 	collectionOrder := client.Database(*database).Collection(admin.CollectionOrder)
 	secret := text.RandomString(32, true, false, true)
+	orderCreatedAt := time.Now()
 	newOrder := admin.Order{
 		ID:                  primitive.NewObjectID(),
 		Status:              orderOptions.Status,
@@ -129,6 +134,8 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 		Printed:             false,
 		LocalPickupNotified: false,
 		PaymentEvents:       make([]interface{}, 0),
+		CreatedAt:           orderCreatedAt,
+		UpdatedAt:           orderCreatedAt,
 	}
 
 	if _, err := collectionOrder.InsertOne(context.Background(), newOrder); err != nil {
@@ -136,10 +143,12 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 	}
 
 	log.Printf("order created: %s", orderOptions.OrderID)
+	customerUpdatedAt := time.Now()
 	if customer.Telephone == "" {
 		_, err := collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
 			"$set": bson.M{
 				"telephone": telephone,
+				"updatedAt": customerUpdatedAt,
 			},
 		})
 		if err != nil {
@@ -150,7 +159,8 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 	}
 	_, err = collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
 		"$set": bson.M{
-			"email": email,
+			"email":     email,
+			"updatedAt": customerUpdatedAt,
 		},
 	})
 	if err != nil {
