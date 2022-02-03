@@ -15,3 +15,16 @@ func TestRandomStringSuccess(t *testing.T) {
 	log.Printf(s)
 	Expect(len(s)).To(Equal(10))
 }
+
+func TestRandomStringDifferent(t *testing.T) {
+	RegisterFailHandler(test.FailedHandler(t))
+
+	exists := map[string]bool{}
+
+	for i := 0; i < 1000000; i++ {
+		s := utils.RandomString(10, true, true, true)
+		_, ok := exists[s]
+		Expect(ok).To(BeFalse())
+		exists[s] = true
+	}
+}

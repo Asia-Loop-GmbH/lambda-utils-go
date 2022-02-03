@@ -5,13 +5,14 @@ go 1.17
 require (
 	github.com/Masterminds/goutils v1.1.1
 	github.com/adyen/adyen-go-api-library/v5 v5.0.2
-	github.com/asia-loop-gmbh/lambda-types-go v1.0.22
+	github.com/asia-loop-gmbh/lambda-types-go v1.0.26
 	github.com/aws/aws-lambda-go v1.28.0
 	github.com/aws/aws-sdk-go v1.42.35
 	github.com/nyaruka/phonenumbers v1.0.74
 	github.com/onsi/gomega v1.17.0
 	github.com/pkg/errors v0.9.1
 	github.com/pusher/pusher-http-go/v5 v5.0.0
+	github.com/shopspring/decimal v1.3.1
 	go.mongodb.org/mongo-driver v1.8.2
 	googlemaps.github.io/maps v1.3.2
 )

@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/asia-loop-gmbh/lambda-types-go/woo"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/number"
 	servicewoo "github.com/asia-loop-gmbh/lambda-utils-go/service-woo"
+	"github.com/shopspring/decimal"
 	"io/ioutil"
 	"log"
-	"math/big"
 	"net/http"
 	"strings"
 )
@@ -20,11 +19,11 @@ func IsValidAndHasEnough(stage, code, appliedAmount string) bool {
 		log.Printf("could not get coupon '%s': %s", code, err)
 		return false
 	}
-	current, err := utils.NewBigNumber(coupon.Amount)
+	current, err := decimal.NewFromString(coupon.Amount)
 	if err != nil {
 		return false
 	}
-	toUse, err := utils.NewBigNumber(appliedAmount)
+	toUse, err := decimal.NewFromString(appliedAmount)
 	if err != nil {
 		return false
 	}
@@ -70,38 +69,43 @@ func UpdateCouponByCode(stage, code, amount string) error {
 	if err != nil {
 		return err
 	}
-	toUse, err := utils.NewBigNumber(amount)
+	toUse, err := decimal.NewFromString(amount)
 	if err != nil {
 		return err
 	}
-	currentAmount, err := utils.NewBigNumber(coupon.Amount)
+	currentAmount, err := decimal.NewFromString(coupon.Amount)
 	if err != nil {
 		return err
 	}
-	newAmount := &big.Float{}
-	newAmount.Sub(currentAmount, toUse)
+	newAmount := currentAmount.Sub(toUse)
 
-	coupon.Amount = newAmount.Text('f', 2)
+	updateCoupon := woo.Coupon{
+		Amount: newAmount.StringFixed(2),
+	}
 
 	serviceWoo, err := servicewoo.NewWoo(stage)
 	if err != nil {
 		return err
 	}
 
-	requestBody, err := json.Marshal(coupon)
+	requestBody, err := json.Marshal(updateCoupon)
 	if err != nil {
 		return err
 	}
+	log.Printf("update coupon request body: %s", string(requestBody))
 
+	url := serviceWoo.NewURL(fmt.Sprintf("/coupons/%d", coupon.ID))
+	log.Printf("PUT -> %s", url)
 	httpClient := http.Client{}
 	request, err := http.NewRequest(
-		"PUT",
-		serviceWoo.NewURL(fmt.Sprintf("/coupons/%d", coupon.ID)),
+		http.MethodPut,
+		url,
 		bytes.NewBuffer(requestBody),
 	)
 	if err != nil {
 		return err
 	}
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err := httpClient.Do(request)
 	if err != nil {
@@ -110,6 +114,11 @@ func UpdateCouponByCode(stage, code, amount string) error {
 	defer response.Body.Close()
 
 	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	log.Printf("response: %s", string(responseBody))
+
 	if response.StatusCode >= 300 {
 		return fmt.Errorf("could not update coupon, error '%d': %s", response.StatusCode, string(responseBody))
 	}

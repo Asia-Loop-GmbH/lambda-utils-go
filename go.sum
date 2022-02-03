@@ -5,8 +5,8 @@ github.com/Masterminds/goutils v1.1.1 h1:5nUrii3FMTL5diU80unEVvNevw1nH4+ZV4DSLVJ
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
 github.com/adyen/adyen-go-api-library/v5 v5.0.2 h1:Z0nwEzz8AwmjyXWrMTtKHAyhP1xRBLdp/FwoqbwtuoY=
 github.com/adyen/adyen-go-api-library/v5 v5.0.2/go.mod h1:a5fiaw9HVGfAdbQX+anGio9Z6ljuyc/iCkly2MSksy4=
-github.com/asia-loop-gmbh/lambda-types-go v1.0.22 h1:p4rTzYjwE7EVACeXhX8B6km9trdHwp+TKvi8fJxrVck=
-github.com/asia-loop-gmbh/lambda-types-go v1.0.22/go.mod h1:KeXZLURHB3J1PhXBY3xYOiYBoB0w1mA9ghE+TLbiRlY=
+github.com/asia-loop-gmbh/lambda-types-go v1.0.26 h1:VTZRtVG9f6LrUV7sVJ0hN60dL3TeX+liBTkrtx8Ec0M=
+github.com/asia-loop-gmbh/lambda-types-go v1.0.26/go.mod h1:KeXZLURHB3J1PhXBY3xYOiYBoB0w1mA9ghE+TLbiRlY=
 github.com/aws/aws-lambda-go v1.28.0 h1:fZiik1PZqW2IyAN4rj+Y0UBaO1IDFlsNo9Zz/XnArK4=
 github.com/aws/aws-lambda-go v1.28.0/go.mod h1:jJmlefzPfGnckuHdXX7/80O3BvUUi12XOkbv4w9SGLU=
 github.com/aws/aws-sdk-go v1.42.35 h1:N4N9buNs4YlosI9N0+WYrq8cIZwdgv34yRbxzZlTvFs=
@@ -88,6 +88,8 @@ github.com/pusher/pusher-http-go/v5 v5.0.0/go.mod h1:Ibji4SGoUDtOy7CVRhCiEpgy+n5
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/sergi/go-diff v1.1.0 h1:we8PVUC3FE2uYfodKH/nBHMSetSfHDR6scGdBi+erh0=
 github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
+github.com/shopspring/decimal v1.3.1 h1:2Usl1nmF/WZucqkFZhnfFYxxxu8LG21F6nPQBE5gKV8=
+github.com/shopspring/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
