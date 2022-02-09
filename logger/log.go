@@ -28,7 +28,7 @@ func NewLogger(f *LogFields) *log.Entry {
 	})
 }
 
-func NewLoggerFromProxyRequest(f LogFields, request *events.APIGatewayProxyRequest) *log.Entry {
+func NewLoggerFromProxyRequest(request *events.APIGatewayProxyRequest) *log.Entry {
 	return NewLogger(&LogFields{
 		Stage:      &request.RequestContext.Stage,
 		Path:       &request.Path,
