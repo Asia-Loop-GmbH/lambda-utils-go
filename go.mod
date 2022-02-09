@@ -13,6 +13,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pusher/pusher-http-go/v5 v5.0.0
 	github.com/shopspring/decimal v1.3.1
+	github.com/sirupsen/logrus v1.8.1
 	go.mongodb.org/mongo-driver v1.8.2
 	googlemaps.github.io/maps v1.3.2
 )
