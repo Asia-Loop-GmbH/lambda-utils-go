@@ -9,15 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NewMongoCorpClient(logger logrus.Entry, ctx context.Context, env string) (*mongo.Client, *string, error) {
+func NewMongoCorpClient(logger *logrus.Entry, ctx context.Context, env string) (*mongo.Client, *string, error) {
 	return newMongoClient(logger, ctx, env, "corp")
 }
 
-func NewMongoAdminClient(logger logrus.Entry, ctx context.Context, env string) (*mongo.Client, *string, error) {
+func NewMongoAdminClient(logger *logrus.Entry, ctx context.Context, env string) (*mongo.Client, *string, error) {
 	return newMongoClient(logger, ctx, env, "admin")
 }
 
-func newMongoClient(logger logrus.Entry, ctx context.Context, env string, app string) (*mongo.Client, *string, error) {
+func newMongoClient(logger *logrus.Entry, ctx context.Context, env string, app string) (*mongo.Client, *string, error) {
 
 	mongoHost, err := aws.GetSSMParameter("all", "/mongo/host", false)
 	if err != nil {
