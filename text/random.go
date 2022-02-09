@@ -1,6 +1,9 @@
 package text
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 const (
 	smallLetter = "abcdefghijklmnopqrstuvwxyz"
@@ -21,6 +24,7 @@ func RandomString(size int, small, cap, digit bool) string {
 	}
 	letters := []rune(dict)
 
+	rand.Seed(time.Now().UnixNano())
 	s := make([]rune, size)
 	for i := range s {
 		s[i] = letters[rand.Intn(len(letters))]
