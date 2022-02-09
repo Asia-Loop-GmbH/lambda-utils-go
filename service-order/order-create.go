@@ -8,15 +8,15 @@ import (
 	"github.com/asia-loop-gmbh/lambda-utils-go/mongo"
 	"github.com/asia-loop-gmbh/lambda-utils-go/normalizer"
 	"github.com/asia-loop-gmbh/lambda-utils-go/text"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
 	"time"
 )
 
-func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
+func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrderOrderOptions,
 	addressOption *admin.CreateOrderAddressOptions) (*admin.Order, error) {
-	log.Printf("create order: %s", orderOptions.OrderID)
+	log.Infof("create order: %s", orderOptions.OrderID)
 
 	firstName := normalizer.Name(addressOption.FirstName)
 	lastName := normalizer.Name(addressOption.LastName)
@@ -39,7 +39,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 
 	resolveAddressResult, err := address.ResolveAddress(inputAddress)
 	if err != nil {
-		log.Printf("could not resolve address: %s", inputAddress)
+		log.Errorf("could not resolve address: %s", inputAddress)
 		addressLine1 = addressOption.AddressLine1
 		postcode = addressOption.Postcode
 		city = addressOption.City
@@ -53,7 +53,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 		validAddress = true
 	}
 
-	client, database, err := mongo.NewMongoAdminClient(context.Background(), stage)
+	client, database, err := mongo.NewMongoAdminClient(log, context.Background(), stage)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 	customer := new(admin.Customer)
 	err = findCustomer.Decode(customer)
 	if err != nil {
-		log.Printf("could not find customer: %s %s (%s)", firstName, lastName, formattedAddress)
+		log.Errorf("could not find customer: %s %s (%s)", firstName, lastName, formattedAddress)
 		customerRef := fmt.Sprintf(
 			"%s%s",
 			text.RandomString(2, false, true, false),
@@ -96,7 +96,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 		if _, err := collectionCustomer.InsertOne(context.Background(), newCustomer); err != nil {
 			return nil, err
 		}
-		log.Printf("new customer created: %s %s (%s)", firstName, lastName, formattedAddress)
+		log.Infof("new customer created: %s %s (%s)", firstName, lastName, formattedAddress)
 		customer = &newCustomer
 	}
 
@@ -142,7 +142,7 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 		return nil, err
 	}
 
-	log.Printf("order created: %s", orderOptions.OrderID)
+	log.Infof("order created: %s", orderOptions.OrderID)
 	customerUpdatedAt := time.Now()
 	if customer.Telephone == "" {
 		_, err := collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
@@ -152,9 +152,9 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 			},
 		})
 		if err != nil {
-			log.Printf("could not update customer telphone to %s: %s", telephone, err)
+			log.Errorf("could not update customer telphone to %s: %s", telephone, err)
 		} else {
-			log.Printf("customer telphone updated: %s", telephone)
+			log.Infof("customer telphone updated: %s", telephone)
 		}
 	}
 	_, err = collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
@@ -164,9 +164,9 @@ func CreateOrder(stage string, orderOptions *admin.CreateOrderOrderOptions,
 		},
 	})
 	if err != nil {
-		log.Printf("could not update customer email to %s: %s", email, err)
+		log.Errorf("could not update customer email to %s: %s", email, err)
 	} else {
-		log.Printf("customer email updated: %s", email)
+		log.Infof("customer email updated: %s", email)
 	}
 
 	// TODO: post processing
