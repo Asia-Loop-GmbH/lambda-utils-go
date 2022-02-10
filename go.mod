@@ -1,4 +1,4 @@
-module github.com/asia-loop-gmbh/lambda-utils-go/v2
+module github.com/asia-loop-gmbh/lambda-utils-go
 
 go 1.17
 
