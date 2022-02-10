@@ -5,9 +5,9 @@ import (
 
 	. "github.com/onsi/gomega"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/normalizer"
-	"github.com/asia-loop-gmbh/lambda-utils-go/test"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/logger"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/normalizer"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/test"
 )
 
 func TestEmail(t *testing.T) {

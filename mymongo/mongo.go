@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/myaws"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/myaws"
 )
 
 func NewMongoCorpClient(log *logrus.Entry, ctx context.Context, stage string) (*mongo.Client, *string, error) {

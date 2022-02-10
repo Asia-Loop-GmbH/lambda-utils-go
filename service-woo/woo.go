@@ -7,7 +7,7 @@ import (
 
 	"strings"
 
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/myaws"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/v2/myaws"
 )
 
 type Woo struct {

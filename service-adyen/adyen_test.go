@@ -5,10 +5,10 @@ import (
 
 	. "github.com/onsi/gomega"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/logger"
-	serviceadyen "github.com/asia-loop-gmbh/lambda-utils-go/service-adyen"
-	"github.com/asia-loop-gmbh/lambda-utils-go/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/text"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/logger"
+	serviceadyen "github.com/asia-loop-gmbh/lambda-utils-go/v2/service-adyen"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/test"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/text"
 )
 
 func TestNewTender(t *testing.T) {

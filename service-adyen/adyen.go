@@ -13,8 +13,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/myaws"
-	"github.com/asia-loop-gmbh/lambda-utils-go/text"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/myaws"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/text"
 )
 
 var (

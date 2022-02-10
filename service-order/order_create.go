@@ -10,10 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/admin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/address"
-	"github.com/asia-loop-gmbh/lambda-utils-go/mymongo"
-	"github.com/asia-loop-gmbh/lambda-utils-go/normalizer"
-	"github.com/asia-loop-gmbh/lambda-utils-go/text"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/address"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/mymongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/normalizer"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/text"
 )
 
 func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrderOrderOptions,

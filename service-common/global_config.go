@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/admin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/mymongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/mymongo"
 )
 
 func GetGlobalConfig(log *logrus.Entry, stage string) (*admin.GlobalConfig, error) {

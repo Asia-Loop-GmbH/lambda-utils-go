@@ -6,8 +6,8 @@ import (
 
 	. "github.com/onsi/gomega"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/test"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/text"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/test"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/v2/text"
 )
 
 func TestRandomString_Success(t *testing.T) {

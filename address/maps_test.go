@@ -3,9 +3,9 @@ package address_test
 import (
 	. "github.com/onsi/gomega"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/address"
-	"github.com/asia-loop-gmbh/lambda-utils-go/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/test"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/address"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/logger"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v2/test"
 
 	"testing"
 )
