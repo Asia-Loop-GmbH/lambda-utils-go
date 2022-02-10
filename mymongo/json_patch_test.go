@@ -1,13 +1,16 @@
-package mongo_test
+package mymongo_test
 
 import (
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/mongo"
-	"github.com/asia-loop-gmbh/lambda-utils-go/test"
+	"testing"
+	"time"
+
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"testing"
-	"time"
+
+	"github.com/asia-loop-gmbh/lambda-utils-go/logger"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/mymongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/test"
 )
 
 func TestMongoUpdateFromJSONPatch(t *testing.T) {
@@ -30,7 +33,7 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 	}
 	patches := []utils.JSONPatch{patch1, patch2, patch3}
 	now := time.Now()
-	update, err := utils.MongoUpdateFromJSONPatch(&patches, &now)
+	update, err := utils.MongoUpdateFromJSONPatch(logger.NewEmptyLogger(), &patches, &now)
 
 	Expect(err).To(BeNil())
 	Expect(update).To(Equal(bson.A{

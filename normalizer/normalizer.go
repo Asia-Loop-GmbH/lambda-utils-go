@@ -1,26 +1,35 @@
 package normalizer
 
 import (
-	"github.com/Masterminds/goutils"
-	"github.com/nyaruka/phonenumbers"
 	"regexp"
 	"strings"
+
+	"github.com/Masterminds/goutils"
+	"github.com/nyaruka/phonenumbers"
+	"github.com/sirupsen/logrus"
 )
 
-func Email(email string) string {
-	return strings.ToLower(email)
+func Email(log *logrus.Entry, email string) string {
+	result := strings.ToLower(email)
+	log.Infof("normalized email: '%s' -> '%s'", email, result)
+	return result
 }
 
-func PhoneNumber(phone string) string {
+func PhoneNumber(log *logrus.Entry, phone string) string {
 	parsed, err := phonenumbers.Parse(phone, "DE")
 	if err != nil {
+		log.Warnf("could not normalize phone '%s', return original", phone)
 		return phone
 	}
-	return phonenumbers.Format(parsed, phonenumbers.INTERNATIONAL)
+	result := phonenumbers.Format(parsed, phonenumbers.INTERNATIONAL)
+	log.Infof("normalized phone: '%s' -> '%s'", phone, result)
+	return result
 }
 
-func Name(name string) string {
-	return normalizeWhitespace(goutils.CapitalizeFully(name, ' ', '-'))
+func Name(log *logrus.Entry, name string) string {
+	result := normalizeWhitespace(goutils.CapitalizeFully(name, ' ', '-'))
+	log.Infof("normalized name: '%s' -> '%s'", name, result)
+	return result
 }
 
 func normalizeWhitespace(text string) string {

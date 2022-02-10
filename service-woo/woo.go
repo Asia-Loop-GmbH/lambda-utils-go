@@ -2,8 +2,12 @@ package service_woo
 
 import (
 	"fmt"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/aws"
+
+	"github.com/sirupsen/logrus"
+
 	"strings"
+
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/myaws"
 )
 
 type Woo struct {
@@ -12,16 +16,17 @@ type Woo struct {
 	Secret string
 }
 
-func NewWoo(stage string) (*Woo, error) {
-	shopUrl, err := utils.GetSSMParameter(stage, "/shop/url", false)
+func NewWoo(log *logrus.Entry, stage string) (*Woo, error) {
+	log.Infof("read woo information")
+	shopUrl, err := utils.GetSSMParameter(log, stage, "/shop/url", false)
 	if err != nil {
 		return nil, err
 	}
-	wooKey, err := utils.GetSSMParameter(stage, "/shop/woo/key", false)
+	wooKey, err := utils.GetSSMParameter(log, stage, "/shop/woo/key", false)
 	if err != nil {
 		return nil, err
 	}
-	wooSecret, err := utils.GetSSMParameter(stage, "/shop/woo/secret", true)
+	wooSecret, err := utils.GetSSMParameter(log, stage, "/shop/woo/secret", true)
 	if err != nil {
 		return nil, err
 	}
@@ -29,13 +34,16 @@ func NewWoo(stage string) (*Woo, error) {
 	return &Woo{*shopUrl, *wooKey, *wooSecret}, nil
 }
 
-func (w *Woo) NewURL(url string) string {
+func (w *Woo) NewURL(log *logrus.Entry, url string) string {
+	log.Infof("prepare woo url: %s", url)
 	connector := "?"
 	if strings.Contains(url, "?") {
 		connector = "&"
 	}
-	return fmt.Sprintf(
+	result := fmt.Sprintf(
 		"%s/wp-json/wc/v3%s%sconsumer_key=%s&consumer_secret=%s",
 		w.URL, url, connector, w.Key, w.Secret,
 	)
+	log.Infof("final woo url: %s", result)
+	return result
 }

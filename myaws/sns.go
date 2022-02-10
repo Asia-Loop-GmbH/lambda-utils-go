@@ -1,8 +1,13 @@
-package aws
+package myaws
 
-import "fmt"
+import (
+	"fmt"
 
-func GetSNSStringAttribute(attribute interface{}) (string, error) {
+	"github.com/sirupsen/logrus"
+)
+
+func GetSNSStringAttribute(log *logrus.Entry, attribute interface{}) (string, error) {
+	log.Infof("read sns attribute value: %v", attribute)
 	v, ok := attribute.(map[string]interface{})
 	if ok {
 		s, ok := v["Value"].(string)

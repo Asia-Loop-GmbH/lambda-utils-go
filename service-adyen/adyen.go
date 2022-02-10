@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
 	"github.com/adyen/adyen-go-api-library/v5/src/adyen"
 	"github.com/adyen/adyen-go-api-library/v5/src/common"
-	"github.com/asia-loop-gmbh/lambda-utils-go/aws"
-	"github.com/asia-loop-gmbh/lambda-utils-go/text"
+	"github.com/sirupsen/logrus"
+
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/asia-loop-gmbh/lambda-utils-go/myaws"
+	"github.com/asia-loop-gmbh/lambda-utils-go/text"
 )
 
 var (
@@ -22,8 +25,9 @@ var (
 	}
 )
 
-func newClient(stage string) (*adyen.APIClient, error) {
-	apiKey, err := aws.GetSSMParameter(stage, "/adyen/key", true)
+func newClient(log *logrus.Entry, stage string) (*adyen.APIClient, error) {
+	log.Infof("new adyen client: %s", stage)
+	apiKey, err := myaws.GetSSMParameter(log, stage, "/adyen/key", true)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +42,9 @@ func newClient(stage string) (*adyen.APIClient, error) {
 	return client, nil
 }
 
-func NewTender(stage, pos, orderId string, amount float32) error {
-	client, err := newClient(stage)
+func NewTender(log *logrus.Entry, stage, pos, orderId string, amount float32) error {
+	log.Infof("new POS payment in %s: order %s [%f]", stage, orderId, amount)
+	client, err := newClient(log, stage)
 	if err != nil {
 		return err
 	}
@@ -77,7 +82,7 @@ func NewTender(stage, pos, orderId string, amount float32) error {
 		return err
 	}
 	url := fmt.Sprintf("%s/%s", client.GetConfig().TerminalApiCloudEndpoint, "async")
-	log.Printf("create tender: POST %s", url)
+	log.Infof("create tender: POST %s", url)
 	httpClient := http.Client{}
 	postRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
@@ -99,7 +104,7 @@ func NewTender(stage, pos, orderId string, amount float32) error {
 		return fmt.Errorf("adyen request error %s: %s", response.Status, string(responseBody))
 	}
 
-	log.Printf("status %s", response.Status)
+	log.Infof("status %s", response.Status)
 
 	return nil
 }

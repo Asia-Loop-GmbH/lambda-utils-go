@@ -3,25 +3,27 @@ package service_order
 import (
 	"context"
 	"fmt"
-	"github.com/asia-loop-gmbh/lambda-types-go/admin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/address"
-	"github.com/asia-loop-gmbh/lambda-utils-go/mongo"
-	"github.com/asia-loop-gmbh/lambda-utils-go/normalizer"
-	"github.com/asia-loop-gmbh/lambda-utils-go/text"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
+
+	"github.com/asia-loop-gmbh/lambda-types-go/admin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/address"
+	"github.com/asia-loop-gmbh/lambda-utils-go/mymongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/normalizer"
+	"github.com/asia-loop-gmbh/lambda-utils-go/text"
 )
 
 func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrderOrderOptions,
 	addressOption *admin.CreateOrderAddressOptions) (*admin.Order, error) {
 	log.Infof("create order: %s", orderOptions.OrderID)
 
-	firstName := normalizer.Name(addressOption.FirstName)
-	lastName := normalizer.Name(addressOption.LastName)
-	telephone := normalizer.PhoneNumber(addressOption.Telephone)
-	email := normalizer.Email(addressOption.Email)
+	firstName := normalizer.Name(log, addressOption.FirstName)
+	lastName := normalizer.Name(log, addressOption.LastName)
+	telephone := normalizer.PhoneNumber(log, addressOption.Telephone)
+	email := normalizer.Email(log, addressOption.Email)
 
 	var addressLine1 string
 	addressLine2 := addressOption.AddressLine2
@@ -37,7 +39,7 @@ func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrde
 		addressOption.City,
 	)
 
-	resolveAddressResult, err := address.ResolveAddress(inputAddress)
+	resolveAddressResult, err := address.ResolveAddress(log, inputAddress)
 	if err != nil {
 		log.Errorf("could not resolve address: %s", inputAddress)
 		addressLine1 = addressOption.AddressLine1
@@ -53,7 +55,7 @@ func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrde
 		validAddress = true
 	}
 
-	client, database, err := mongo.NewMongoAdminClient(log, context.Background(), stage)
+	client, database, err := mymongo.NewMongoAdminClient(log, context.Background(), stage)
 	if err != nil {
 		return nil, err
 	}

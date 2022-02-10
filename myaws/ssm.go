@@ -1,27 +1,30 @@
-package aws
+package myaws
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/pkg/errors"
-	"log"
-	"os"
-	"strings"
+	"github.com/sirupsen/logrus"
 )
 
-func GetSSMParameter(env, name string, decryption bool) (*string, error) {
-	if fromEnvVar, ok := getFromEnvVar(env, name); ok {
-		log.Printf("get [%s %s] from environment variable", env, name)
+func GetSSMParameter(log *logrus.Entry, stage, name string, decryption bool) (*string, error) {
+	log.Infof("get [%s %s] variable", stage, name)
+	if fromEnvVar, ok := getFromEnvVar(stage, name); ok {
+		log.Infof("found [%s %s] from env variable", stage, name)
 		return &fromEnvVar, nil
 	}
-	awsSession, err := session.NewSession(&aws.Config{Region: aws.String("eu-central-1")})
+	awsSession, err := session.NewSession(&aws.Config{Region: aws.String(endpoints.EuCentral1RegionID)})
 	if err != nil {
 		return nil, err
 	}
 	ssmService := ssm.New(awsSession)
-	parameterName := aws.String("/" + env + name)
+	parameterName := aws.String("/" + stage + name)
 	getParameter, err := ssmService.GetParameter(&ssm.GetParameterInput{
 		Name:           parameterName,
 		WithDecryption: aws.Bool(decryption),
@@ -29,7 +32,7 @@ func GetSSMParameter(env, name string, decryption bool) (*string, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("could not find ssm parameter: %s", *parameterName))
 	}
-	log.Printf("get [%s %s] from aws ssm", env, name)
+	log.Infof("found [%s %s] from aws ssm", stage, name)
 	return getParameter.Parameter.Value, nil
 }
 

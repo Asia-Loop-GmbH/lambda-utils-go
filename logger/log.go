@@ -1,9 +1,10 @@
 package logger
 
 import (
+	"os"
+
 	"github.com/aws/aws-lambda-go/events"
 	log "github.com/sirupsen/logrus"
-	"os"
 )
 
 type LogFields struct {
@@ -26,6 +27,10 @@ func NewLogger(f *LogFields) *log.Entry {
 		"requestId":  f.RequestID,
 		"httpMethod": f.HTTPMethod,
 	})
+}
+
+func NewEmptyLogger() *log.Entry {
+	return log.WithFields(log.Fields{})
 }
 
 func NewLoggerFromProxyRequest(request *events.APIGatewayProxyRequest) *log.Entry {

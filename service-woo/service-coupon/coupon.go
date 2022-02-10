@@ -4,19 +4,23 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"github.com/shopspring/decimal"
+	"github.com/sirupsen/logrus"
+
 	"github.com/asia-loop-gmbh/lambda-types-go/woo"
 	servicewoo "github.com/asia-loop-gmbh/lambda-utils-go/service-woo"
-	"github.com/shopspring/decimal"
+
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
 
-func IsValidAndHasEnough(stage, code, appliedAmount string) bool {
-	coupon, err := GetCouponByCode(stage, code)
+func IsValidAndHasEnough(log *logrus.Entry, stage, code, appliedAmount string) bool {
+	log.Infof("check coupon valid and has enough amount: %s", code)
+	coupon, err := GetCouponByCode(log, stage, code)
 	if err != nil {
-		log.Printf("could not get coupon '%s': %s", code, err)
+		log.Errorf("could not get coupon '%s': %s", code, err)
 		return false
 	}
 	current, err := decimal.NewFromString(coupon.Amount)
@@ -30,17 +34,18 @@ func IsValidAndHasEnough(stage, code, appliedAmount string) bool {
 	return current.Cmp(toUse) > 0
 }
 
-func GetCouponByCode(stage, code string) (*woo.Coupon, error) {
+func GetCouponByCode(log *logrus.Entry, stage, code string) (*woo.Coupon, error) {
+	log.Infof("get coupon: %s", code)
 	code = strings.TrimSpace(code)
 	if code == "" {
 		return nil, fmt.Errorf("blank coupon code")
 	}
-	serviceWoo, err := servicewoo.NewWoo(stage)
+	serviceWoo, err := servicewoo.NewWoo(log, stage)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := http.Get(serviceWoo.NewURL(fmt.Sprintf("/coupons?code=%s", code)))
+	response, err := http.Get(serviceWoo.NewURL(log, fmt.Sprintf("/coupons?code=%s", code)))
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +69,9 @@ func GetCouponByCode(stage, code string) (*woo.Coupon, error) {
 	return &coupons[0], nil
 }
 
-func UpdateCouponByCode(stage, code, amount string) error {
-	coupon, err := GetCouponByCode(stage, code)
+func UpdateCouponByCode(log *logrus.Entry, stage, code, amount string) error {
+	log.Infof("update coupon %s: %s", code, amount)
+	coupon, err := GetCouponByCode(log, stage, code)
 	if err != nil {
 		return err
 	}
@@ -83,7 +89,7 @@ func UpdateCouponByCode(stage, code, amount string) error {
 		Amount: newAmount.StringFixed(2),
 	}
 
-	serviceWoo, err := servicewoo.NewWoo(stage)
+	serviceWoo, err := servicewoo.NewWoo(log, stage)
 	if err != nil {
 		return err
 	}
@@ -92,10 +98,10 @@ func UpdateCouponByCode(stage, code, amount string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("update coupon request body: %s", string(requestBody))
+	log.Infof("update coupon request body: %s", string(requestBody))
 
-	url := serviceWoo.NewURL(fmt.Sprintf("/coupons/%d", coupon.ID))
-	log.Printf("PUT -> %s", url)
+	url := serviceWoo.NewURL(log, fmt.Sprintf("/coupons/%d", coupon.ID))
+	log.Infof("PUT -> %s", url)
 	httpClient := http.Client{}
 	request, err := http.NewRequest(
 		http.MethodPut,
@@ -117,7 +123,7 @@ func UpdateCouponByCode(stage, code, amount string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("response: %s", string(responseBody))
+	log.Infof("response: %s", string(responseBody))
 
 	if response.StatusCode >= 300 {
 		return fmt.Errorf("could not update coupon, error '%d': %s", response.StatusCode, string(responseBody))

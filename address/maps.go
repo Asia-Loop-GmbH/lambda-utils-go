@@ -3,9 +3,11 @@ package address
 import (
 	"context"
 	"fmt"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/aws"
+
+	"github.com/sirupsen/logrus"
 	"googlemaps.github.io/maps"
-	"log"
+
+	"github.com/asia-loop-gmbh/lambda-utils-go/myaws"
 )
 
 type ResolveAddressResult struct {
@@ -17,8 +19,9 @@ type ResolveAddressResult struct {
 	FormattedAddress string
 }
 
-func ResolveAddress(address string) (*ResolveAddressResult, error) {
-	apiKey, err := utils.GetSSMParameter("all", "/google/maps/key", true)
+func ResolveAddress(log *logrus.Entry, address string) (*ResolveAddressResult, error) {
+	log.Infof("resolve address: %s", address)
+	apiKey, err := myaws.GetSSMParameter(log, "all", "/google/maps/key", true)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +43,7 @@ func ResolveAddress(address string) (*ResolveAddressResult, error) {
 	}
 
 	if len(result) > 1 {
-		log.Printf("multiple addresses found, the first item will be taken")
+		log.Warnf("multiple addresses found, the first item will be taken")
 	}
 
 	return &ResolveAddressResult{

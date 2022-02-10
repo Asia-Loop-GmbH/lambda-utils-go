@@ -1,20 +1,22 @@
 package pusher
 
 import (
-	"github.com/asia-loop-gmbh/lambda-utils-go/aws"
 	"github.com/pusher/pusher-http-go/v5"
+	"github.com/sirupsen/logrus"
+
+	"github.com/asia-loop-gmbh/lambda-utils-go/myaws"
 )
 
-func NewPusherClient(stage *string) (*pusher.Client, error) {
-	app, err := aws.GetSSMParameter(*stage, "/pusher/app", false)
+func NewPusherClient(log *logrus.Entry, stage *string) (*pusher.Client, error) {
+	app, err := myaws.GetSSMParameter(log, *stage, "/pusher/app", false)
 	if err != nil {
 		return nil, err
 	}
-	key, err := aws.GetSSMParameter(*stage, "/pusher/key", false)
+	key, err := myaws.GetSSMParameter(log, *stage, "/pusher/key", false)
 	if err != nil {
 		return nil, err
 	}
-	secret, err := aws.GetSSMParameter(*stage, "/pusher/secret", true)
+	secret, err := myaws.GetSSMParameter(log, *stage, "/pusher/secret", true)
 	if err != nil {
 		return nil, err
 	}

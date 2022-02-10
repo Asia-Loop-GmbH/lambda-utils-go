@@ -1,11 +1,13 @@
-package mongo
+package mymongo
 
 import (
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type JSONPatch struct {
@@ -22,7 +24,8 @@ const (
 	mongoAttributeUpdatedAt  = "updatedAt"
 )
 
-func MongoUpdateFromJSONPatch(patches *[]JSONPatch, now *time.Time) (bson.A, error) {
+func MongoUpdateFromJSONPatch(log *logrus.Entry, patches *[]JSONPatch, now *time.Time) (bson.A, error) {
+	log.Infof("create update bson from json patch: %v", patches)
 	result := bson.A{}
 	for _, patch := range *patches {
 		singleUpdate, err := updateFromOnePatch(&patch)

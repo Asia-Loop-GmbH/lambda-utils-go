@@ -1,11 +1,13 @@
 package text_test
 
 import (
-	"github.com/asia-loop-gmbh/lambda-utils-go/test"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/text"
-	. "github.com/onsi/gomega"
 	"log"
 	"testing"
+
+	. "github.com/onsi/gomega"
+
+	"github.com/asia-loop-gmbh/lambda-utils-go/test"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/text"
 )
 
 func TestRandomString_Success(t *testing.T) {
@@ -29,7 +31,7 @@ func TestRandomString_Different(t *testing.T) {
 	}
 }
 
-func TestRandomString_Different_Only_Digits(t *testing.T) {
+func TestRandomString_Different_OrderID(t *testing.T) {
 	RegisterFailHandler(test.FailedHandler(t))
 
 	exists := map[string]bool{}
