@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/Masterminds/goutils v1.1.1
 	github.com/adyen/adyen-go-api-library/v5 v5.0.2
-	github.com/asia-loop-gmbh/lambda-types-go v1.1.2
+	github.com/asia-loop-gmbh/lambda-types-go v1.1.4
 	github.com/aws/aws-lambda-go v1.28.0
 	github.com/aws/aws-sdk-go v1.42.35
 	github.com/nyaruka/phonenumbers v1.0.74
