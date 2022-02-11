@@ -4,43 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	"github.com/adyen/adyen-go-api-library/v5/src/adyen"
-	"github.com/adyen/adyen-go-api-library/v5/src/common"
-	"github.com/sirupsen/logrus"
-
 	"io/ioutil"
 	"net/http"
 	"time"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/myaws"
+	"github.com/sirupsen/logrus"
+
 	"github.com/asia-loop-gmbh/lambda-utils-go/v2/text"
 )
-
-var (
-	envMap = map[string]common.Environment{
-		"dev":  common.TestEnv,
-		"pre":  common.LiveEnv,
-		"prod": common.LiveEnv,
-	}
-)
-
-func newClient(log *logrus.Entry, stage string) (*adyen.APIClient, error) {
-	log.Infof("new adyen client: %s", stage)
-	apiKey, err := myaws.GetSSMParameter(log, stage, "/adyen/key", true)
-	if err != nil {
-		return nil, err
-	}
-	environment, ok := envMap[stage]
-	if !ok {
-		return nil, fmt.Errorf("no adyen environment config found for stage: %s", stage)
-	}
-	client := adyen.NewClient(&common.Config{
-		ApiKey:      *apiKey,
-		Environment: environment,
-	})
-	return client, nil
-}
 
 func NewTender(log *logrus.Entry, stage, pos, orderId string, amount float32) error {
 	log.Infof("new POS payment in %s: order %s [%f]", stage, orderId, amount)

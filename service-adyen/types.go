@@ -6,6 +6,9 @@ const (
 	messageClassService    = "Service"
 	messageCategoryPayment = "Payment"
 	currencyEUR            = "EUR"
+	countryDE              = "DE"
+	accountECOM            = "AsiaLoopECOM"
+	livePrefix             = "9567a7305fc929ca-AsiaLoopGmbH"
 )
 
 type MessageHeader struct {
