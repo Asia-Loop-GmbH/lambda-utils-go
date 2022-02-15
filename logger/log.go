@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	log "github.com/sirupsen/logrus"
@@ -17,7 +16,7 @@ type LogFields struct {
 
 func init() {
 	formatter := &log.JSONFormatter{}
-	formatter.TimestampFormat = time.RFC3339Nano
+	formatter.TimestampFormat = "2006-01-02T15:04:05.999Z07:00"
 	log.SetFormatter(formatter)
 	log.SetReportCaller(true)
 	log.SetOutput(os.Stdout)
