@@ -45,7 +45,7 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 	patchObjectIDArray := utils.JSONPatch{
 		OP:    "replace",
 		Path:  "/objectId1/array",
-		Value: []string{objectID2String, objectID3String},
+		Value: []interface{}{objectID2String, objectID3String},
 	}
 	patches := []utils.JSONPatch{patch1, patch2, patch3, patchObjectID, patchObjectIDArray}
 	now := time.Now()

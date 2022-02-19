@@ -58,14 +58,19 @@ func updateFromOnePatch(patch *JSONPatch, objectIDPaths []string) (bson.M, error
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("%s is not an uuid", v))
 			}
-		case []string:
+		case []interface{}:
 			uuids := make([]primitive.ObjectID, 0)
 			for _, id := range v {
-				uuid, err := primitive.ObjectIDFromHex(id)
-				if err != nil {
-					return nil, errors.Wrap(err, fmt.Sprintf("%s is not an uuid", id))
+				switch vid := id.(type) {
+				case string:
+					uuid, err := primitive.ObjectIDFromHex(vid)
+					if err != nil {
+						return nil, errors.Wrap(err, fmt.Sprintf("%s is not an uuid", id))
+					}
+					uuids = append(uuids, uuid)
+				default:
+					return nil, fmt.Errorf("path %s is marked as uuid but got array element %v", mongoPath, vid)
 				}
-				uuids = append(uuids, uuid)
 			}
 			value = uuids
 		default:
