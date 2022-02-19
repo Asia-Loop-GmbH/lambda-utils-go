@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -24,26 +25,58 @@ const (
 	mongoAttributeUpdatedAt  = "updatedAt"
 )
 
-func MongoUpdateFromJSONPatch(log *logrus.Entry, patches *[]JSONPatch, now *time.Time) (bson.A, error) {
+func MongoUpdateFromJSONPatch(log *logrus.Entry, patches *[]JSONPatch, now *time.Time, objectIDPaths []string) (bson.A, error) {
 	log.Infof("create update bson from json patch: %v", patches)
 	result := bson.A{}
 	for _, patch := range *patches {
-		singleUpdate, err := updateFromOnePatch(&patch)
+		singleUpdate, err := updateFromOnePatch(&patch, objectIDPaths)
 		if err != nil {
 			return nil, err
 		}
 		result = append(result, singleUpdate)
 	}
 	result = append(result, updateUpdatedAt(now))
+	log.Infof("JSON patch %v converted to mongo update: %v", patches, result)
 	return result, nil
 }
 
-func updateFromOnePatch(patch *JSONPatch) (bson.M, error) {
+func updateFromOnePatch(patch *JSONPatch, objectIDPaths []string) (bson.M, error) {
+	var err error
+	mongoPath := jsonPathToMongoPath(&patch.Path)
+	isObjectID := false
+	for _, p := range objectIDPaths {
+		if p == mongoPath {
+			isObjectID = true
+			break
+		}
+	}
+	value := patch.Value
+	if isObjectID {
+		switch v := patch.Value.(type) {
+		case string:
+			value, err = primitive.ObjectIDFromHex(v)
+			if err != nil {
+				return nil, errors.Wrap(err, fmt.Sprintf("%s is not an uuid", v))
+			}
+		case []string:
+			uuids := make([]primitive.ObjectID, 0)
+			for _, id := range v {
+				uuid, err := primitive.ObjectIDFromHex(id)
+				if err != nil {
+					return nil, errors.Wrap(err, fmt.Sprintf("%s is not an uuid", id))
+				}
+				uuids = append(uuids, uuid)
+			}
+			value = uuids
+		default:
+			return nil, fmt.Errorf("path %s is marked as uuid but got %v", mongoPath, v)
+		}
+	}
 	switch patch.OP {
 	case jsonPatchOperatorReplace:
 		return bson.M{
 			mongoMethodSet: bson.M{
-				jsonPathToMongoPath(&patch.Path): patch.Value,
+				mongoPath: value,
 			},
 		}, nil
 	default:

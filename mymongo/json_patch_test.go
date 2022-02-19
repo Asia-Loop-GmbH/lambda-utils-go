@@ -31,9 +31,26 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 		Path:  "/a/c/e",
 		Value: true,
 	}
-	patches := []utils.JSONPatch{patch1, patch2, patch3}
+	objectID1 := primitive.NewObjectID()
+	objectID1String := objectID1.Hex()
+	patchObjectID := utils.JSONPatch{
+		OP:    "replace",
+		Path:  "/objectId1/a",
+		Value: objectID1String,
+	}
+	objectID2 := primitive.NewObjectID()
+	objectID2String := objectID2.Hex()
+	objectID3 := primitive.NewObjectID()
+	objectID3String := objectID3.Hex()
+	patchObjectIDArray := utils.JSONPatch{
+		OP:    "replace",
+		Path:  "/objectId1/array",
+		Value: []string{objectID2String, objectID3String},
+	}
+	patches := []utils.JSONPatch{patch1, patch2, patch3, patchObjectID, patchObjectIDArray}
 	now := time.Now()
-	update, err := utils.MongoUpdateFromJSONPatch(logger.NewEmptyLogger(), &patches, &now)
+	objectIDPaths := []string{"objectId1.a", "objectId1.array"}
+	update, err := utils.MongoUpdateFromJSONPatch(logger.NewEmptyLogger(), &patches, &now, objectIDPaths)
 
 	Expect(err).To(BeNil())
 	Expect(update).To(Equal(bson.A{
@@ -50,6 +67,16 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 		bson.M{
 			"$set": bson.M{
 				"a.c.e": true,
+			},
+		},
+		bson.M{
+			"$set": bson.M{
+				"objectId1.a": objectID1,
+			},
+		},
+		bson.M{
+			"$set": bson.M{
+				"objectId1.array": []primitive.ObjectID{objectID2, objectID3},
 			},
 		},
 		bson.M{
