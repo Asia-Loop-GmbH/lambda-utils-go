@@ -5,8 +5,8 @@ import (
 
 	. "github.com/onsi/gomega"
 
-	logger2 "github.com/asia-loop-gmbh/lambda-utils-go/v2/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/test"
+	logger2 "github.com/asia-loop-gmbh/lambda-utils-go/v3/logger"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/test"
 )
 
 func TestNewEmptyLogger_Timestamp(t *testing.T) {

@@ -7,19 +7,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/admin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/mymongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/mymongo"
 )
 
-func GetGlobalConfig(log *logrus.Entry, stage string) (*admin.GlobalConfig, error) {
-	client, database, err := mymongo.NewMongoAdminClient(log, context.Background(), stage)
+func GetGlobalConfig(log *logrus.Entry, ctx context.Context, stage string) (*admin.GlobalConfig, error) {
+	colGlbCfg, err := mymongo.AdminCollection(log, ctx, stage, admin.CollectionGlobalConfig)
 	if err != nil {
 		return nil, err
 	}
-	defer client.Disconnect(context.Background())
-
-	log.Infof("database connected: %s", *database)
-	collectionGlobalConfig := client.Database(*database).Collection(admin.CollectionGlobalConfig)
-	find := collectionGlobalConfig.FindOne(context.Background(), bson.M{})
+	find := colGlbCfg.FindOne(context.Background(), bson.M{})
 	globalConfig := new(admin.GlobalConfig)
 	err = find.Decode(globalConfig)
 	if err != nil {

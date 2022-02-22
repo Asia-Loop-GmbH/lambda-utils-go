@@ -10,10 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/admin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/address"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/mymongo"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/normalizer"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/text"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/address"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/mymongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/normalizer"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/text"
 )
 
 func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrderOrderOptions,
@@ -55,13 +55,10 @@ func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrde
 		validAddress = true
 	}
 
-	client, database, err := mymongo.NewMongoAdminClient(log, context.Background(), stage)
+	collectionCustomer, err := mymongo.AdminCollection(log, context.TODO(), stage, admin.CollectionCustomer)
 	if err != nil {
 		return nil, err
 	}
-	defer client.Disconnect(context.Background())
-
-	collectionCustomer := client.Database(*database).Collection(admin.CollectionCustomer)
 	findCustomer := collectionCustomer.FindOne(context.Background(), bson.M{
 		"addressLine1": addressLine1,
 		"addressLine2": addressLine2,
@@ -102,7 +99,10 @@ func CreateOrder(log *logrus.Entry, stage string, orderOptions *admin.CreateOrde
 		customer = &newCustomer
 	}
 
-	collectionOrder := client.Database(*database).Collection(admin.CollectionOrder)
+	collectionOrder, err := mymongo.AdminCollection(log, context.TODO(), stage, admin.CollectionOrder)
+	if err != nil {
+		return nil, err
+	}
 	secret := text.RandomString(32, true, false, true)
 	orderCreatedAt := time.Now()
 	newOrder := admin.Order{

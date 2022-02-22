@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/shopspring/decimal"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/logger"
-	servicecoupon "github.com/asia-loop-gmbh/lambda-utils-go/v2/service-woo/service-coupon"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/test"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/logger"
+	servicecoupon "github.com/asia-loop-gmbh/lambda-utils-go/v3/service-woo/service-coupon"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/test"
 )
 
 func TestGetCouponByCode_Success(t *testing.T) {

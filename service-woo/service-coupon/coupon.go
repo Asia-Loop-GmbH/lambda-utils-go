@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/woo"
-	servicewoo "github.com/asia-loop-gmbh/lambda-utils-go/v2/service-woo"
+	servicewoo "github.com/asia-loop-gmbh/lambda-utils-go/v3/service-woo"
 
 	"io/ioutil"
 	"net/http"

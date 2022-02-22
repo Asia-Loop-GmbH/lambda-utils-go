@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/woo"
-	servicewoo "github.com/asia-loop-gmbh/lambda-utils-go/v2/service-woo"
+	servicewoo "github.com/asia-loop-gmbh/lambda-utils-go/v3/service-woo"
 )
 
 func GetSlots(log *logrus.Entry, stage string) (*woo.Slots, error) {

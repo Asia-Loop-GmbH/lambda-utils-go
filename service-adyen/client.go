@@ -7,7 +7,7 @@ import (
 	"github.com/adyen/adyen-go-api-library/v5/src/common"
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/myaws"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/myaws"
 )
 
 var (

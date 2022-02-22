@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"googlemaps.github.io/maps"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/myaws"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/myaws"
 )
 
 type ResolveAddressResult struct {

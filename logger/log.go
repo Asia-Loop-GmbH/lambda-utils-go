@@ -15,8 +15,16 @@ type LogFields struct {
 }
 
 func init() {
-	formatter := &log.JSONFormatter{}
-	formatter.TimestampFormat = "2006-01-02T15:04:05.999Z07:00"
+	var formatter log.Formatter
+	jsonFormatter := &log.JSONFormatter{}
+	jsonFormatter.TimestampFormat = "2006-01-02T15:04:05.999Z07:00"
+	textFormatter := &log.TextFormatter{}
+	local := os.Getenv("AL_LOCAL")
+	if local == "true" {
+		formatter = textFormatter
+	} else {
+		formatter = jsonFormatter
+	}
 	log.SetFormatter(formatter)
 	log.SetReportCaller(true)
 	log.SetOutput(os.Stdout)

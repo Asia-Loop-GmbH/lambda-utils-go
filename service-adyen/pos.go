@@ -10,7 +10,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/text"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/text"
 )
 
 func NewTender(log *logrus.Entry, stage, pos, orderId string, amount float32) error {

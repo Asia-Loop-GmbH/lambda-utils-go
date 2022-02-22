@@ -8,9 +8,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/logger"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/v2/mymongo"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/test"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/logger"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/v3/mymongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/test"
 )
 
 func TestMongoUpdateFromJSONPatch(t *testing.T) {

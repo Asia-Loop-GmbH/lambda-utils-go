@@ -4,7 +4,7 @@ import (
 	"github.com/pusher/pusher-http-go/v5"
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v2/myaws"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/myaws"
 )
 
 func NewPusherClient(log *logrus.Entry, stage *string) (*pusher.Client, error) {
