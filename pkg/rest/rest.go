@@ -25,6 +25,18 @@ func HTTPResponse(log *logrus.Entry, status int, request *events.APIGatewayProxy
 	}
 }
 
+func HTTPResponseRaw(log *logrus.Entry, status int, body string) *events.APIGatewayProxyResponse {
+	log.Infof("http response: [%d] %v", status, body)
+	return &events.APIGatewayProxyResponse{
+		StatusCode: status,
+		Body:       body,
+		Headers: map[string]string{
+			"Access-Control-Allow-Origin":  "*",
+			"Access-Control-Allow-Headers": "*",
+		},
+	}
+}
+
 func HTTPErrorResponse(log *logrus.Entry, status int, request *events.APIGatewayProxyRequest, err error) *events.APIGatewayProxyResponse {
 	log.Infof("http error response: [%d] %v", status, err)
 	body := admin.HttpErrorBody{
