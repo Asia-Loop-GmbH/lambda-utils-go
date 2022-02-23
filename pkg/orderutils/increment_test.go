@@ -1,4 +1,4 @@
-package servicepusher
+package orderutils_test
 
 import (
 	"context"
@@ -8,18 +8,15 @@ import (
 
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/orderutils"
 )
 
-func TestGetClient(t *testing.T) {
+func TestNextOrderInvoice(t *testing.T) {
 	RegisterFailHandler(test.FailedHandler(t))
 	log := logger.NewEmptyLogger()
-	ctx := context.TODO()
+	ctx := context.Background()
 
-	client, err := getClient(log, ctx, "dev")
+	next, err := orderutils.NextOrderInvoice(log, ctx, "dev")
 	Expect(err).To(BeNil())
-	Expect(client).To(Not(BeNil()))
-
-	client, err = getClient(log, ctx, "dev")
-	Expect(err).To(BeNil())
-	Expect(client).To(Not(BeNil()))
+	log.Infof("%s", *next)
 }

@@ -7,7 +7,10 @@ require (
 	github.com/adyen/adyen-go-api-library/v5 v5.0.2
 	github.com/asia-loop-gmbh/lambda-types-go v1.2.9
 	github.com/aws/aws-lambda-go v1.28.0
-	github.com/aws/aws-sdk-go v1.42.35
+	github.com/aws/aws-sdk-go-v2 v1.13.0
+	github.com/aws/aws-sdk-go-v2/config v1.13.1
+	github.com/aws/aws-sdk-go-v2/service/sns v1.15.0
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.20.0
 	github.com/nyaruka/phonenumbers v1.0.74
 	github.com/onsi/gomega v1.17.0
 	github.com/pkg/errors v0.9.1
@@ -19,6 +22,15 @@ require (
 )
 
 require (
+	github.com/aws/aws-sdk-go-v2/credentials v1.8.0 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.10.0 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.4 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.2.0 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.7.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.9.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.14.0 // indirect
+	github.com/aws/smithy-go v1.10.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect

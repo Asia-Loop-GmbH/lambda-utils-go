@@ -1,6 +1,7 @@
 package servicepusher
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/sirupsen/logrus"
@@ -19,8 +20,8 @@ type EventOrderCreatedData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishOrderCreated(log *logrus.Entry, stage string, data *EventOrderCreatedData) error {
-	client, err := getClient(log, stage)
+func PublishOrderCreated(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderCreatedData) error {
+	client, err := getClient(log, ctx, stage)
 	if err != nil {
 		return err
 	}
@@ -36,8 +37,8 @@ type EventOrderDeliveredData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishOrderDelivered(log *logrus.Entry, stage string, data *EventOrderDeliveredData) error {
-	client, err := getClient(log, stage)
+func PublishOrderDelivered(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderDeliveredData) error {
+	client, err := getClient(log, ctx, stage)
 	if err != nil {
 		return err
 	}
@@ -54,8 +55,8 @@ type EventOrderPOSPaymentStartedData struct {
 	OrderID string `json:"orderId"`
 }
 
-func PublishOrderPOSPaymentStarted(log *logrus.Entry, stage string, data *EventOrderPOSPaymentStartedData) error {
-	client, err := getClient(log, stage)
+func PublishOrderPOSPaymentStarted(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderPOSPaymentStartedData) error {
+	client, err := getClient(log, ctx, stage)
 	if err != nil {
 		return err
 	}
@@ -72,8 +73,8 @@ type EventOrderPOSPaymentPaidData struct {
 	OrderID string `json:"orderId"`
 }
 
-func PublishOrderPOSPaymentPaid(log *logrus.Entry, stage string, data *EventOrderPOSPaymentPaidData) error {
-	client, err := getClient(log, stage)
+func PublishOrderPOSPaymentPaid(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderPOSPaymentPaidData) error {
+	client, err := getClient(log, ctx, stage)
 	if err != nil {
 		return err
 	}
@@ -89,8 +90,8 @@ type EventGroupFinalizedData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishGroupFinalized(log *logrus.Entry, stage string, data *EventGroupFinalizedData) error {
-	client, err := getClient(log, stage)
+func PublishGroupFinalized(log *logrus.Entry, ctx context.Context, stage string, data *EventGroupFinalizedData) error {
+	client, err := getClient(log, ctx, stage)
 	if err != nil {
 		return err
 	}
@@ -106,8 +107,8 @@ type EventGroupDeliveredData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishGroupDelivered(log *logrus.Entry, stage string, data *EventGroupDeliveredData) error {
-	client, err := getClient(log, stage)
+func PublishGroupDelivered(log *logrus.Entry, ctx context.Context, stage string, data *EventGroupDeliveredData) error {
+	client, err := getClient(log, ctx, stage)
 	if err != nil {
 		return err
 	}
