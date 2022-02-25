@@ -8,7 +8,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/woo"
+	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/woo"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo"
 )
 

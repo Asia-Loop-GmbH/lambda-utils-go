@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/admin"
+	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
 )
 
 func HTTPResponse(log *logrus.Entry, status int, request *events.APIGatewayProxyRequest, body interface{}) *events.APIGatewayProxyResponse {

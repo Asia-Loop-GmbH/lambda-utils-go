@@ -12,7 +12,7 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/admin"
+	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
 )
 
 type SessionResponse struct {

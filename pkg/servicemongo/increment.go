@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/admin"
+	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
 )
 
 func Next(log *logrus.Entry, ctx context.Context, stage string, key string) (int64, error) {

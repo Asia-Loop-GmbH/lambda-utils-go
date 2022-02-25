@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/admin"
+	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/normalizer"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicegooglemaps"
