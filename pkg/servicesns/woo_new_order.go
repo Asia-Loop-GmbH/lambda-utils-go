@@ -35,7 +35,7 @@ func PublishWooNewOrder(log *logrus.Entry, ctx context.Context, stage string, da
 				DataType:    aws.String("String"),
 				StringValue: aws.String(stage),
 			},
-			"orderId": {
+			"id": {
 				DataType:    aws.String("String"),
 				StringValue: aws.String(fmt.Sprintf("%d", data.ID)),
 			},
