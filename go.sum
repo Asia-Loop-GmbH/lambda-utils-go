@@ -5,8 +5,8 @@ github.com/Masterminds/goutils v1.1.1 h1:5nUrii3FMTL5diU80unEVvNevw1nH4+ZV4DSLVJ
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
 github.com/adyen/adyen-go-api-library/v5 v5.0.2 h1:Z0nwEzz8AwmjyXWrMTtKHAyhP1xRBLdp/FwoqbwtuoY=
 github.com/adyen/adyen-go-api-library/v5 v5.0.2/go.mod h1:a5fiaw9HVGfAdbQX+anGio9Z6ljuyc/iCkly2MSksy4=
-github.com/asia-loop-gmbh/lambda-types-go/v2 v2.0.0 h1:inACS2OqutrGHK8dWUGiK3Hx9gp9w0YuBy8ER7rYmpk=
-github.com/asia-loop-gmbh/lambda-types-go/v2 v2.0.0/go.mod h1:tgRw8QiZReKeBaLNwxOEfbgo1sow+QprvL0Q2pPIT3c=
+github.com/asia-loop-gmbh/lambda-types-go/v2 v2.1.0 h1:uxFeaE8l4cfdm5knPcjLsd89P+oUp3+0tJgp4bfEMa0=
+github.com/asia-loop-gmbh/lambda-types-go/v2 v2.1.0/go.mod h1:tgRw8QiZReKeBaLNwxOEfbgo1sow+QprvL0Q2pPIT3c=
 github.com/aws/aws-lambda-go v1.28.0 h1:fZiik1PZqW2IyAN4rj+Y0UBaO1IDFlsNo9Zz/XnArK4=
 github.com/aws/aws-lambda-go v1.28.0/go.mod h1:jJmlefzPfGnckuHdXX7/80O3BvUUi12XOkbv4w9SGLU=
 github.com/aws/aws-sdk-go-v2 v1.13.0/go.mod h1:L6+ZpqHaLbAaxsqV0L4cvxZY7QupWJB4fhkf8LXvC7w=

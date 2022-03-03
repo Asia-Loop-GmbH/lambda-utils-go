@@ -8,11 +8,10 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/woo"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo"
 )
 
-func GetSlots(log *logrus.Entry, ctx context.Context, stage string) (*woo.Slots, error) {
+func GetSlots(log *logrus.Entry, ctx context.Context, stage string) (*Slots, error) {
 	log.Info("get slots")
 	serviceWoo, err := servicewoo.NewWoo(log, ctx, stage)
 	if err != nil {
@@ -28,7 +27,7 @@ func GetSlots(log *logrus.Entry, ctx context.Context, stage string) (*woo.Slots,
 		return nil, err
 	}
 
-	slots := new(woo.Slots)
+	slots := new(Slots)
 	if err := json.Unmarshal(responseBody, slots); err != nil {
 		return nil, err
 	}
