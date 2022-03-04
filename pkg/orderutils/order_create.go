@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/api"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/normalizer"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
@@ -17,8 +18,8 @@ import (
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
 )
 
-func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOptions *CreateOrderOrderOptions,
-	addressOption *CreateOrderAddressOptions) (*dbadmin.Order, error) {
+func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOptions *api.CreateOrderOrderOptions,
+	addressOption *api.CreateOrderAddressOptions) (*dbadmin.Order, error) {
 	log.Infof("create order: %s", orderOptions.OrderID)
 
 	firstName := normalizer.Name(log, addressOption.FirstName)
