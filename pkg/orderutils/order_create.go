@@ -10,14 +10,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/normalizer"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicegooglemaps"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
 )
 
-func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOptions *admin.CreateOrderOrderOptions,
-	addressOption *admin.CreateOrderAddressOptions) (*admin.Order, error) {
+func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOptions *CreateOrderOrderOptions,
+	addressOption *CreateOrderAddressOptions) (*dbadmin.Order, error) {
 	log.Infof("create order: %s", orderOptions.OrderID)
 
 	firstName := normalizer.Name(log, addressOption.FirstName)
@@ -41,7 +42,7 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 
 	resolveAddressResult, err := servicegooglemaps.ResolveAddress(log, ctx, inputAddress)
 	if err != nil {
-		log.Errorf("could not resolve address: %s", inputAddress)
+		log.Warnf("failed to resolve address: %s", inputAddress)
 		addressLine1 = addressOption.AddressLine1
 		postcode = addressOption.Postcode
 		city = addressOption.City
@@ -55,11 +56,11 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		validAddress = true
 	}
 
-	collectionCustomer, err := servicemongo.AdminCollection(log, context.TODO(), stage, admin.CollectionCustomer)
+	collectionCustomer, err := servicemongo.AdminCollection(log, ctx, stage, admin.CollectionCustomer)
 	if err != nil {
 		return nil, err
 	}
-	findCustomer := collectionCustomer.FindOne(context.Background(), bson.M{
+	findCustomer := collectionCustomer.FindOne(ctx, bson.M{
 		"addressLine1": addressLine1,
 		"addressLine2": addressLine2,
 		"postcode":     postcode,
@@ -67,17 +68,17 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		"firstName":    firstName,
 		"lastName":     lastName,
 	})
-	customer := new(admin.Customer)
+	customer := new(dbadmin.Customer)
 	err = findCustomer.Decode(customer)
 	if err != nil {
-		log.Errorf("could not find customer: %s %s (%s)", firstName, lastName, formattedAddress)
+		log.Infof("failed to find customer: %s %s (%s)", firstName, lastName, formattedAddress)
 		customerRef := fmt.Sprintf(
 			"%s%s",
 			random.String(2, false, true, false),
 			random.String(6, false, false, true),
 		)
 		customerCreatedAt := time.Now()
-		newCustomer := admin.Customer{
+		newCustomer := dbadmin.Customer{
 			ID:           primitive.NewObjectID(),
 			FirstName:    firstName,
 			LastName:     lastName,
@@ -92,20 +93,20 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 			CreatedAt:    customerCreatedAt,
 			UpdatedAt:    customerCreatedAt,
 		}
-		if _, err := collectionCustomer.InsertOne(context.Background(), newCustomer); err != nil {
+		if _, err := collectionCustomer.InsertOne(ctx, newCustomer); err != nil {
 			return nil, err
 		}
 		log.Infof("new customer created: %s %s (%s)", firstName, lastName, formattedAddress)
 		customer = &newCustomer
 	}
 
-	collectionOrder, err := servicemongo.AdminCollection(log, context.TODO(), stage, admin.CollectionOrder)
+	collectionOrder, err := servicemongo.AdminCollection(log, ctx, stage, admin.CollectionOrder)
 	if err != nil {
 		return nil, err
 	}
 	secret := random.String(32, true, false, true)
 	orderCreatedAt := time.Now()
-	newOrder := admin.Order{
+	newOrder := dbadmin.Order{
 		ID:                  primitive.NewObjectID(),
 		Status:              orderOptions.Status,
 		OrderID:             orderOptions.OrderID,
@@ -140,33 +141,33 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		UpdatedAt:           orderCreatedAt,
 	}
 
-	if _, err := collectionOrder.InsertOne(context.Background(), newOrder); err != nil {
+	if _, err := collectionOrder.InsertOne(ctx, newOrder); err != nil {
 		return nil, err
 	}
 
 	log.Infof("order created: %s", orderOptions.OrderID)
 	customerUpdatedAt := time.Now()
 	if customer.Telephone == "" {
-		_, err := collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
+		_, err := collectionCustomer.UpdateByID(ctx, customer.ID, bson.M{
 			"$set": bson.M{
 				"telephone": telephone,
 				"updatedAt": customerUpdatedAt,
 			},
 		})
 		if err != nil {
-			log.Errorf("could not update customer telphone to %s: %s", telephone, err)
+			log.Errorf("failed to update customer telphone to %s: %s", telephone, err)
 		} else {
 			log.Infof("customer telphone updated: %s", telephone)
 		}
 	}
-	_, err = collectionCustomer.UpdateByID(context.Background(), customer.ID, bson.M{
+	_, err = collectionCustomer.UpdateByID(ctx, customer.ID, bson.M{
 		"$set": bson.M{
 			"email":     email,
 			"updatedAt": customerUpdatedAt,
 		},
 	})
 	if err != nil {
-		log.Errorf("could not update customer email to %s: %s", email, err)
+		log.Errorf("failed to update customer email to %s: %s", email, err)
 	} else {
 		log.Infof("customer email updated: %s", email)
 	}
