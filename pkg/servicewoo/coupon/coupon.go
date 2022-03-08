@@ -9,7 +9,6 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/woo"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo"
 
 	"io/ioutil"
@@ -35,7 +34,7 @@ func IsValidAndHasEnough(log *logrus.Entry, ctx context.Context, stage, code, ap
 	return current.Cmp(toUse) > 0
 }
 
-func GetCouponByCode(log *logrus.Entry, ctx context.Context, stage, code string) (*woo.Coupon, error) {
+func GetCouponByCode(log *logrus.Entry, ctx context.Context, stage, code string) (*servicewoo.Coupon, error) {
 	log.Infof("get coupon: %s", code)
 	code = strings.TrimSpace(code)
 	if code == "" {
@@ -56,7 +55,7 @@ func GetCouponByCode(log *logrus.Entry, ctx context.Context, stage, code string)
 		return nil, err
 	}
 
-	coupons := make([]woo.Coupon, 0)
+	coupons := make([]servicewoo.Coupon, 0)
 	if err := json.Unmarshal(responseBody, &coupons); err != nil {
 		return nil, err
 	}
@@ -86,7 +85,7 @@ func UpdateCouponByCode(log *logrus.Entry, ctx context.Context, stage, code, amo
 	}
 	newAmount := currentAmount.Sub(toUse)
 
-	updateCoupon := woo.Coupon{
+	updateCoupon := servicewoo.Coupon{
 		Amount: newAmount.StringFixed(2),
 	}
 
