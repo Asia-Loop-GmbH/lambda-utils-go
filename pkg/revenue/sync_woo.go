@@ -3,16 +3,16 @@ package revenue
 import (
 	"context"
 	"fmt"
-	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicedynamodb"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo/order"
 )
 
@@ -85,10 +85,15 @@ func SyncWooOrder(log *logrus.Entry, ctx context.Context, stage string, id int) 
 		return fmt.Errorf("expected total tax [%s] from oder [%d], calculated [%s]", totalTax.StringFixed(2), o.ID, checkTotalTax.StringFixed(2))
 	}
 
+	created, err := o.GetDateCreated()
+	if err != nil {
+		return err
+	}
+
 	r := Revenue{
 		ID:             fmt.Sprintf("%d", o.ID),
 		PaymentID:      fmt.Sprintf("%d", o.ID),
-		CreatedAt:      time.Now(),
+		CreatedAt:      created,
 		ShippingMethod: dbadmin.OrderShippingMethod(o.ShippingLines[0].MethodID),
 		Store:          o.GetStoreKey(),
 		Source:         RevenueSourceOnline,
@@ -102,8 +107,36 @@ func SyncWooOrder(log *logrus.Entry, ctx context.Context, stage string, id int) 
 	if err != nil {
 		return err
 	}
+
+	table, err := servicessm.GetParameter(log, ctx, stage, "/dynamo/revenue", false)
+	if err != nil {
+		return err
+	}
+
+	output, err := dbClient.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: table,
+		Key: map[string]types.AttributeValue{
+			"Id": &types.AttributeValueMemberS{Value: r.ID},
+		},
+	})
+	if err != nil {
+		return err
+	}
+	if output.Item != nil {
+		log.Infof("order [%s] exists, will be removed", r.ID)
+		_, err := dbClient.DeleteItem(ctx, &dynamodb.DeleteItemInput{
+			TableName: table,
+			Key: map[string]types.AttributeValue{
+				"Id": &types.AttributeValueMemberS{Value: r.ID},
+			},
+		})
+		if err != nil {
+			return err
+		}
+	}
+
 	_, err = dbClient.PutItem(ctx, &dynamodb.PutItemInput{
-		TableName: aws.String("RevenueDev"), // TODO
+		TableName: table,
 		Item:      item,
 	})
 	if err != nil {
