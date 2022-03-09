@@ -81,10 +81,14 @@ func SyncWooOrder(log *logrus.Entry, ctx context.Context, stage string, id int) 
 		return err
 	}
 
+	createdString, err := timeToDynamoString(created)
+	if err != nil {
+		return err
+	}
 	r := Revenue{
 		ID:             fmt.Sprintf("%d", o.ID),
 		PaymentID:      fmt.Sprintf("%d", o.ID),
-		CreatedAt:      created,
+		CreatedAt:      *createdString,
 		ShippingMethod: dbadmin.OrderShippingMethod(o.ShippingLines[0].MethodID),
 		Store:          o.GetStoreKey(),
 		Source:         RevenueSourceOnline,

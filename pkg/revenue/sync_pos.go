@@ -85,10 +85,14 @@ func SyncPOSOrder(log *logrus.Entry, ctx context.Context, stage, orderID string)
 		return fmt.Errorf("expected tax [%s] from order [%s], calculated [%s]", tax, o.OrderID, tax7)
 	}
 
+	createdAtString, err := timeToDynamoString(o.CreatedAt)
+	if err != nil {
+		return err
+	}
 	r := Revenue{
 		ID:             o.OrderID,
 		PaymentID:      o.ID.Hex(),
-		CreatedAt:      o.CreatedAt,
+		CreatedAt:      *createdAtString,
 		ShippingMethod: o.ShippingMethod,
 		Store:          s.Configuration.WPStoreKey,
 		Source:         RevenueSourceOffline,

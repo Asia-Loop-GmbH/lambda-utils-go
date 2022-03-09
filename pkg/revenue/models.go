@@ -29,7 +29,7 @@ const (
 type Revenue struct {
 	ID             string                      `dynamodbav:"Id"`
 	PaymentID      string                      `dynamodbav:"PaymentId"`
-	CreatedAt      time.Time                   `dynamodbav:"CreatedAt"`
+	CreatedAt      string                      `dynamodbav:"CreatedAt"`
 	Type           RevenueType                 `dynamodbav:"RevenueType"`
 	ShippingMethod dbadmin.OrderShippingMethod `dynamodbav:"ShippingMethod"`
 	Store          string                      `dynamodbav:"Store"`
@@ -38,4 +38,13 @@ type Revenue struct {
 	Net7           string                      `dynamodbav:"Net7"`
 	Tax7           string                      `dynamodbav:"Tax7"`
 	Tip            string                      `dynamodbav:"Tip"`
+}
+
+func timeToDynamoString(t time.Time) (*string, error) {
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		return nil, err
+	}
+	result := t.In(loc).Format("2006-01-02T15:04:05Z07")
+	return &result, nil
 }
