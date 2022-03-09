@@ -9,7 +9,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/api"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/normalizer"
@@ -57,7 +56,7 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		validAddress = true
 	}
 
-	collectionCustomer, err := servicemongo.AdminCollection(log, ctx, stage, admin.CollectionCustomer)
+	collectionCustomer, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionCustomer)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +100,7 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		customer = &newCustomer
 	}
 
-	collectionOrder, err := servicemongo.AdminCollection(log, ctx, stage, admin.CollectionOrder)
+	collectionOrder, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionOrder)
 	if err != nil {
 		return nil, err
 	}

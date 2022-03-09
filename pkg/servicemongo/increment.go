@@ -11,11 +11,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
 )
 
 func Next(log *logrus.Entry, ctx context.Context, stage string, key string) (int64, error) {
 	log.Infof("next increment of [%s]", key)
-	colIncrement, err := AdminCollection(log, ctx, stage, admin.CollectionIncrement)
+	colIncrement, err := AdminCollection(log, ctx, stage, dbadmin.CollectionIncrement)
 	if err != nil {
 		return 0, err
 	}
