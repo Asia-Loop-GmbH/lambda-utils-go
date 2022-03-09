@@ -12,7 +12,11 @@ import (
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
 )
 
-func SyncPOSOrder(log *logrus.Entry, ctx context.Context, stage, orderID string) error {
+const (
+	corporateSuffix = "--corporate"
+)
+
+func SyncCorporateOrder(log *logrus.Entry, ctx context.Context, stage, orderID string) error {
 	defer servicemongo.Disconnect(log, ctx)
 
 	colOrder, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionOrder)
@@ -58,17 +62,6 @@ func SyncPOSOrder(log *logrus.Entry, ctx context.Context, stage, orderID string)
 		}
 	}
 
-	couponNet, err := decimal.NewFromString(o.AppliedCouponNet)
-	if err != nil {
-		return err
-	}
-	couponTax, err := decimal.NewFromString(o.AppliedCouponTax)
-	if err != nil {
-		return err
-	}
-	net7 = net7.Sub(couponNet)
-	tax7 = tax7.Sub(couponTax)
-
 	net, err := decimal.NewFromString(o.Net)
 	if err != nil {
 		return err
@@ -95,23 +88,59 @@ func SyncPOSOrder(log *logrus.Entry, ctx context.Context, stage, orderID string)
 		return fmt.Errorf("expected total [%s] from order [%s], calculated [%s]", total, o.OrderID, totalCheck)
 	}
 
+	// split
+	// we need more complex computation if we have different taxes
+	// currently we have only 7%, it makes things easier
+	employeeTotal, err := decimal.NewFromString(o.PaidTotal)
+	if err != nil {
+		return err
+	}
+	employeeNet := employeeTotal.DivRound(decimal.NewFromFloat(1.07), 2)
+	employeeTax := employeeTotal.Sub(employeeNet)
+
+	companyNet := net7.Sub(employeeNet)
+	companyTax := tax7.Sub(employeeTax)
+
 	createdAtString, err := timeToDynamoString(o.CreatedAt)
 	if err != nil {
 		return err
 	}
-	r := Revenue{
+
+	employeeRevenue := Revenue{
 		ID:             o.OrderID,
 		PaymentID:      o.ID.Hex(),
 		CreatedAt:      *createdAtString,
 		ShippingMethod: o.ShippingMethod,
 		Store:          s.Configuration.WPStoreKey,
-		Source:         RevenueSourceOffline,
-		Company:        "",
+		Source:         RevenueSourceCorporate,
+		Company:        o.CompanyKey,
 		Type:           RevenueTypeOrder,
-		Net7:           net7.StringFixed(2),
-		Tax7:           tax7.StringFixed(2),
+		Net7:           employeeNet.StringFixed(2),
+		Tax7:           employeeTax.StringFixed(2),
 		Tip:            tip.StringFixed(2),
 	}
 
-	return insert(log, ctx, stage, &r)
+	if err := insert(log, ctx, stage, &employeeRevenue); err != nil {
+		return err
+	}
+
+	companyRevenue := Revenue{
+		ID:             o.OrderID + corporateSuffix,
+		PaymentID:      o.ID.Hex() + corporateSuffix,
+		CreatedAt:      *createdAtString,
+		ShippingMethod: o.ShippingMethod,
+		Store:          s.Configuration.WPStoreKey,
+		Source:         RevenueSourceCorporate,
+		Company:        o.CompanyKey,
+		Type:           RevenueTypeOrder,
+		Net7:           companyNet.StringFixed(2),
+		Tax7:           companyTax.StringFixed(2),
+		Tip:            tip.StringFixed(2),
+	}
+
+	if err := insert(log, ctx, stage, &companyRevenue); err != nil {
+		return err
+	}
+
+	return nil
 }
