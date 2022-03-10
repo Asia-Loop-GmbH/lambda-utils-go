@@ -13,6 +13,8 @@ import (
 )
 
 func insert(log *logrus.Entry, ctx context.Context, stage string, r *Revenue) error {
+	log.Infof("insert revenue: %v", r)
+
 	dbClient, err := servicedynamodb.NewClient(log, ctx)
 
 	item, err := attributevalue.MarshalMap(r)
@@ -35,7 +37,7 @@ func insert(log *logrus.Entry, ctx context.Context, stage string, r *Revenue) er
 		return err
 	}
 	if output.Item != nil {
-		log.Infof("order [%s] exists, will be removed", r.ID)
+		log.Infof("revenue [%s] exists, will be removed", r.ID)
 		_, err := dbClient.DeleteItem(ctx, &dynamodb.DeleteItemInput{
 			TableName: table,
 			Key: map[string]types.AttributeValue{
@@ -54,5 +56,6 @@ func insert(log *logrus.Entry, ctx context.Context, stage string, r *Revenue) er
 	if err != nil {
 		return err
 	}
+	log.Infof("inserted revenue [%s]", r.ID)
 	return nil
 }

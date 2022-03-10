@@ -18,3 +18,12 @@ func TestGet(t *testing.T) {
 	Expect(err).To(BeNil())
 	Expect(o.ID).To(Equal(123))
 }
+
+func TestGetRefunds(t *testing.T) {
+	RegisterFailHandler(test.FailedHandler(t))
+
+	refunds, err := order.GetRefunds(logger.NewEmptyLogger(), context.TODO(), "dev", 245)
+	Expect(err).To(BeNil())
+	Expect(len(refunds)).To(Equal(1))
+	Expect(refunds[0].ID).To(Equal(262))
+}
