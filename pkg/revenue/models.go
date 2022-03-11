@@ -8,7 +8,7 @@ import (
 
 const (
 	WooTaxClass7 = "mitnehmen"
-	WooFeeTip    = "Tip (Benutzerdefiniertes Trinkgeld)"
+	WooFeeTip    = "Tip (Benutzerdefiniertes Trinkgeld"
 )
 
 type RevenueSource string
