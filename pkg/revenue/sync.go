@@ -12,12 +12,27 @@ import (
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
 )
 
+func CheckRefund(log *logrus.Entry, ctx context.Context, stage, merchantRef string) error {
+	synced, err := refundExists(log, ctx, stage, merchantRef)
+	if err != nil {
+		return err
+	}
+	if !synced {
+		wooID, err := strconv.Atoi(merchantRef)
+		if err != nil {
+			return err
+		}
+		return SyncWooRefunds(log, ctx, stage, wooID)
+	}
+	return nil
+}
+
 func CheckOrder(log *logrus.Entry, ctx context.Context, stage, merchantRef string) error {
 	refAsObjectID, err := primitive.ObjectIDFromHex(merchantRef)
 	isWoo := err != nil
 
 	if isWoo {
-		synced, err := exists(log, ctx, stage, merchantRef)
+		synced, err := orderExists(log, ctx, stage, merchantRef)
 		if err != nil {
 			return err
 		}
@@ -31,7 +46,7 @@ func CheckOrder(log *logrus.Entry, ctx context.Context, stage, merchantRef strin
 		return nil
 	}
 
-	synced, err := exists(log, ctx, stage, merchantRef)
+	synced, err := orderExists(log, ctx, stage, merchantRef)
 	if err != nil {
 		return err
 	}

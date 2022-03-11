@@ -21,3 +21,10 @@ func TestCheckOrder(t *testing.T) {
 	err = revenue.CheckOrder(logger.NewEmptyLogger(), context.TODO(), "dev", "62229b6c957a5b919f8360fb")
 	Expect(err).To(BeNil())
 }
+
+func TestCheckRefund(t *testing.T) {
+	RegisterFailHandler(test.FailedHandler(t))
+
+	err := revenue.CheckRefund(logger.NewEmptyLogger(), context.TODO(), "dev", "263")
+	Expect(err).To(BeNil())
+}
