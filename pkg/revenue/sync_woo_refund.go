@@ -3,6 +3,7 @@ package revenue
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
@@ -63,8 +64,7 @@ func syncWooRefund(log *logrus.Entry, ctx context.Context, stage string, o *serv
 
 	tip := decimal.Zero
 	for _, item := range re.FeeLines {
-		switch item.Name {
-		case WooFeeTip:
+		if strings.HasPrefix(item.Name, WooFeeTip) {
 			tipTax, err := decimal.NewFromString(item.TotalTax)
 			if err != nil {
 				return err
@@ -77,7 +77,7 @@ func syncWooRefund(log *logrus.Entry, ctx context.Context, stage string, o *serv
 				return err
 			}
 			tip = tip.Add(tipTotal)
-		default:
+		} else {
 			return fmt.Errorf("fee name [%s] not registered", item.Name)
 		}
 	}
