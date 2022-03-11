@@ -12,10 +12,39 @@ import (
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
 
+func exists(log *logrus.Entry, ctx context.Context, stage string, merchantRef string) (bool, error) {
+	log.Infof("check revenue exists [%s]", merchantRef)
+
+	dbClient, err := servicedynamodb.NewClient(log, ctx)
+	if err != nil {
+		return false, err
+	}
+
+	table, err := servicessm.GetParameter(log, ctx, stage, "/dynamo/revenue", false)
+	if err != nil {
+		return false, err
+	}
+
+	output, err := dbClient.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: table,
+		Key: map[string]types.AttributeValue{
+			"Id": &types.AttributeValueMemberS{Value: merchantRef},
+		},
+	})
+	if err != nil {
+		return false, err
+	}
+
+	return output != nil, nil
+}
+
 func insert(log *logrus.Entry, ctx context.Context, stage string, r *Revenue) error {
 	log.Infof("insert revenue: %v", r)
 
 	dbClient, err := servicedynamodb.NewClient(log, ctx)
+	if err != nil {
+		return err
+	}
 
 	item, err := attributevalue.MarshalMap(r)
 	if err != nil {
