@@ -7,6 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
@@ -16,6 +17,28 @@ const (
 	corporateSuffix = "--corporate"
 )
 
+func SyncCorporateOrderByUUID(log *logrus.Entry, ctx context.Context, stage, id string) error {
+	defer servicemongo.Disconnect(log, ctx)
+
+	colOrder, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionOrder)
+	if err != nil {
+		return err
+	}
+
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	findOrder := colOrder.FindOne(ctx, bson.M{"_id": objectID})
+	o := new(dbadmin.Order)
+	if err := findOrder.Decode(o); err != nil {
+		return err
+	}
+
+	return syncCorporateOrder(log, ctx, stage, o)
+}
+
 func SyncCorporateOrder(log *logrus.Entry, ctx context.Context, stage, orderID string) error {
 	defer servicemongo.Disconnect(log, ctx)
 
@@ -24,14 +47,18 @@ func SyncCorporateOrder(log *logrus.Entry, ctx context.Context, stage, orderID s
 		return err
 	}
 
-	colStore, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionStore)
-	if err != nil {
-		return err
-	}
-
 	findOrder := colOrder.FindOne(ctx, bson.M{"orderId": orderID})
 	o := new(dbadmin.Order)
 	if err := findOrder.Decode(o); err != nil {
+		return err
+	}
+
+	return syncCorporateOrder(log, ctx, stage, o)
+}
+
+func syncCorporateOrder(log *logrus.Entry, ctx context.Context, stage string, o *dbadmin.Order) error {
+	colStore, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionStore)
+	if err != nil {
 		return err
 	}
 

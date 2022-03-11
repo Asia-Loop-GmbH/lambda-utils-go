@@ -17,3 +17,10 @@ func TestSyncWooOrder(t *testing.T) {
 	err := revenue.SyncWooOrder(logger.NewEmptyLogger(), context.TODO(), "dev", 259)
 	Expect(err).To(BeNil())
 }
+
+//func TestSyncWooOrderPROD(t *testing.T) {
+//	RegisterFailHandler(test.FailedHandler(t))
+//
+//	err := revenue.SyncWooOrder(logger.NewEmptyLogger(), context.TODO(), "prod", 32121)
+//	Expect(err).To(BeNil())
+//}

@@ -89,7 +89,7 @@ func SyncWooOrder(log *logrus.Entry, ctx context.Context, stage string, id int) 
 		ID:             fmt.Sprintf("%d", o.ID),
 		PaymentID:      fmt.Sprintf("%d", o.ID),
 		CreatedAt:      *createdString,
-		ShippingMethod: dbadmin.OrderShippingMethod(o.ShippingLines[0].MethodID),
+		ShippingMethod: dbadmin.OrderShippingMethod(o.GetShippingMethod()),
 		Store:          o.GetStoreKey(),
 		Source:         RevenueSourceOnline,
 		Company:        "",

@@ -11,6 +11,7 @@ type OrderShippingMethod string
 const (
 	OrderShippingMethodFreeShipping OrderShippingMethod = "free_shipping"
 	OrderShippingMethodLocalPickup  OrderShippingMethod = "local_pickup"
+	OrderShippingMethodNoShipping   OrderShippingMethod = "no_shipping"
 )
 
 type OrderStatus string

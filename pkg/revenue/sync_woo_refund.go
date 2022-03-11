@@ -104,7 +104,7 @@ func syncWooRefund(log *logrus.Entry, ctx context.Context, stage string, o *serv
 		ID:             fmt.Sprintf("%d", re.ID),
 		PaymentID:      fmt.Sprintf("%d", o.ID),
 		CreatedAt:      *createdString,
-		ShippingMethod: dbadmin.OrderShippingMethod(o.ShippingLines[0].MethodID),
+		ShippingMethod: dbadmin.OrderShippingMethod(o.GetShippingMethod()),
 		Store:          o.GetStoreKey(),
 		Source:         RevenueSourceOnline,
 		Company:        "",

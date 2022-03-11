@@ -17,3 +17,10 @@ func TestSyncCorporateOrder(t *testing.T) {
 	err := revenue.SyncCorporateOrder(logger.NewEmptyLogger(), context.TODO(), "dev", "POS-9C563XKE")
 	Expect(err).To(BeNil())
 }
+
+func TestSyncCorporateOrderByUUID(t *testing.T) {
+	RegisterFailHandler(test.FailedHandler(t))
+
+	err := revenue.SyncCorporateOrderByUUID(logger.NewEmptyLogger(), context.TODO(), "dev", "62229b6c957a5b919f8360fb")
+	Expect(err).To(BeNil())
+}

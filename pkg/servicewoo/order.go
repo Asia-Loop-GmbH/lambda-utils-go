@@ -83,6 +83,14 @@ func (o *Order) getMetaDataString(key string) (string, error) {
 	return "", fmt.Errorf("key [%s] not found in: %v", key, o)
 }
 
+func (o *Order) GetShippingMethod() string {
+	if len(o.ShippingLines) > 0 {
+		return o.ShippingLines[0].MethodID
+	} else {
+		return "no_shipping"
+	}
+}
+
 func (o *Order) GetDateCreated() (time.Time, error) {
 	loc, err := time.LoadLocation("GMT")
 	if err != nil {
