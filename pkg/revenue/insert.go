@@ -35,7 +35,7 @@ func exists(log *logrus.Entry, ctx context.Context, stage string, merchantRef st
 		return false, err
 	}
 
-	return output != nil, nil
+	return output.Item != nil, nil
 }
 
 func insert(log *logrus.Entry, ctx context.Context, stage string, r *Revenue) error {
