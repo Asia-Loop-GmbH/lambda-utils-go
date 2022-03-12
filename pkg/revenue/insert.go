@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/sirupsen/logrus"
 
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/revenue/service"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicedynamodb"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
@@ -43,12 +44,12 @@ func refundExists(log *logrus.Entry, ctx context.Context, stage string, merchant
 	}
 
 	for _, item := range output.Items {
-		r := new(Revenue)
+		r := new(service.Revenue)
 		err := attributevalue.UnmarshalMap(item, r)
 		if err != nil {
 			return false, err
 		}
-		if r.Type == RevenueTypeRefund {
+		if r.Type == service.RevenueTypeRefund {
 			return true, nil
 		}
 	}
@@ -82,7 +83,7 @@ func orderExists(log *logrus.Entry, ctx context.Context, stage string, merchantR
 	return output.Item != nil, nil
 }
 
-func insert(log *logrus.Entry, ctx context.Context, stage string, r *Revenue) error {
+func insert(log *logrus.Entry, ctx context.Context, stage string, r *service.Revenue) error {
 	log.Infof("insert revenue: %v", r)
 
 	dbClient, err := servicedynamodb.NewClient(log, ctx)

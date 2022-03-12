@@ -4,58 +4,48 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/sirupsen/logrus"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicedynamodb"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/revenue/service"
 )
 
 const (
 	nonWooRefundSuffix = "--non-woo-refund"
 )
 
-func fakeNonWooRefund(log *logrus.Entry, ctx context.Context, stage, id string) error {
-	client, err := servicedynamodb.NewClient(log, ctx)
-	if err != nil {
-		return err
-	}
-	table, err := servicessm.GetParameter(log, ctx, stage, "/dynamo/revenue", false)
+func fakeNonWooRefund(log *logrus.Entry, ctx context.Context, stage, paymentID string) error {
+	rs, err := service.QueryByPaymentID(log, ctx, stage, paymentID)
 	if err != nil {
 		return err
 	}
 
-	out, err := client.Query(ctx, &dynamodb.QueryInput{
-		TableName:              table,
-		IndexName:              aws.String("PaymentId"),
-		KeyConditionExpression: aws.String("PaymentId = :paymentId"),
-		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":paymentId": &types.AttributeValueMemberS{Value: id},
-		},
-	})
-
-	if len(out.Items) != 1 {
-		return fmt.Errorf("expected only one revenue item from [%s], got: %v", id, out.Items)
+	if len(rs) == 0 {
+		// TODO: currently not support corporate refund
+		// so it must be POS refund here
+		if err := SyncPOSOrderByUUID(log, ctx, stage, paymentID); err != nil {
+			return err
+		}
+		rs, err = service.QueryByPaymentID(log, ctx, stage, paymentID)
+		if err != nil {
+			return err
+		}
 	}
 
-	r := new(Revenue)
-	err = attributevalue.UnmarshalMap(out.Items[0], r)
-	if err != nil {
-		return err
+	if len(rs) != 1 {
+		return fmt.Errorf("expected only one revenue item from [%s], got: %v", paymentID, rs)
 	}
 
-	if r.Type != RevenueTypeOrder {
-		return fmt.Errorf("expected only order from ref [%s], got: %v", id, r)
+	r := rs[0]
+
+	if r.Type != service.RevenueTypeOrder {
+		return fmt.Errorf("expected only order from ref [%s], got: %v", paymentID, r)
 	}
 
-	refund := Revenue{
+	refund := service.Revenue{
 		ID:             r.ID + nonWooRefundSuffix,
 		PaymentID:      r.PaymentID,
 		CreatedAt:      r.CreatedAt, // TODO: get date form adyen
-		Type:           RevenueTypeRefund,
+		Type:           service.RevenueTypeRefund,
 		ShippingMethod: r.ShippingMethod,
 		Store:          r.Store,
 		Source:         r.Source,

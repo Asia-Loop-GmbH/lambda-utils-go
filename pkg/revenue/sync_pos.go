@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/revenue/service"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
 )
 
@@ -69,7 +70,7 @@ func syncPOSOrder(log *logrus.Entry, ctx context.Context, stage string, o *dbadm
 
 	for _, item := range o.Items {
 		switch item.TaxClass {
-		case WooTaxClass7:
+		case service.WooTaxClass7:
 			net, err := decimal.NewFromString(item.Net)
 			if err != nil {
 				return err
@@ -122,19 +123,19 @@ func syncPOSOrder(log *logrus.Entry, ctx context.Context, stage string, o *dbadm
 		return fmt.Errorf("expected total [%s] from order [%s], calculated [%s]", total, o.OrderID, totalCheck)
 	}
 
-	createdAtString, err := timeToDynamoString(o.CreatedAt)
+	createdAtString, err := service.TimeToDynamoString(o.CreatedAt)
 	if err != nil {
 		return err
 	}
-	r := Revenue{
+	r := service.Revenue{
 		ID:             o.OrderID,
 		PaymentID:      o.ID.Hex(),
 		CreatedAt:      *createdAtString,
 		ShippingMethod: o.ShippingMethod,
 		Store:          s.Configuration.WPStoreKey,
-		Source:         RevenueSourceOffline,
+		Source:         service.RevenueSourceOffline,
 		Company:        "",
-		Type:           RevenueTypeOrder,
+		Type:           service.RevenueTypeOrder,
 		Net7:           net7.StringFixed(2),
 		Tax7:           tax7.StringFixed(2),
 		Tip:            tip.StringFixed(2),

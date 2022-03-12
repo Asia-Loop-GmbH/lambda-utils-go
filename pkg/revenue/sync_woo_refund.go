@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/revenue/service"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo/order"
 )
@@ -46,7 +47,7 @@ func syncWooRefund(log *logrus.Entry, ctx context.Context, stage string, o *serv
 
 	for _, item := range re.LineItems {
 		switch item.TaxClass {
-		case WooTaxClass7:
+		case service.WooTaxClass7:
 			net, err := decimal.NewFromString(item.Total)
 			if err != nil {
 				return err
@@ -64,7 +65,7 @@ func syncWooRefund(log *logrus.Entry, ctx context.Context, stage string, o *serv
 
 	tip := decimal.Zero
 	for _, item := range re.FeeLines {
-		if strings.HasPrefix(item.Name, WooFeeTip) {
+		if strings.HasPrefix(item.Name, service.WooFeeTip) {
 			tipTax, err := decimal.NewFromString(item.TotalTax)
 			if err != nil {
 				return err
@@ -96,19 +97,19 @@ func syncWooRefund(log *logrus.Entry, ctx context.Context, stage string, o *serv
 		return err
 	}
 
-	createdString, err := timeToDynamoString(created)
+	createdString, err := service.TimeToDynamoString(created)
 	if err != nil {
 		return err
 	}
-	r := Revenue{
+	r := service.Revenue{
 		ID:             fmt.Sprintf("%d", re.ID),
 		PaymentID:      fmt.Sprintf("%d", o.ID),
 		CreatedAt:      *createdString,
 		ShippingMethod: dbadmin.OrderShippingMethod(o.GetShippingMethod()),
 		Store:          o.GetStoreKey(),
-		Source:         RevenueSourceOnline,
+		Source:         service.RevenueSourceOnline,
 		Company:        "",
-		Type:           RevenueTypeRefund,
+		Type:           service.RevenueTypeRefund,
 		Net7:           net7.StringFixed(2),
 		Tax7:           tax7.StringFixed(2),
 		Tip:            tip.StringFixed(2),

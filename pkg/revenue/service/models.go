@@ -1,4 +1,4 @@
-package revenue
+package service
 
 import (
 	"time"
@@ -40,7 +40,7 @@ type Revenue struct {
 	Tip            string                      `dynamodbav:"Tip"`
 }
 
-func timeToDynamoString(t time.Time) (*string, error) {
+func TimeToDynamoString(t time.Time) (*string, error) {
 	loc, err := time.LoadLocation("UTC")
 	if err != nil {
 		return nil, err

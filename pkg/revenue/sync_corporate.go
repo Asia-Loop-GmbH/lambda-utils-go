@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/revenue/service"
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
 )
 
@@ -73,7 +74,7 @@ func syncCorporateOrder(log *logrus.Entry, ctx context.Context, stage string, o 
 
 	for _, item := range o.Items {
 		switch item.TaxClass {
-		case WooTaxClass7:
+		case service.WooTaxClass7:
 			net, err := decimal.NewFromString(item.Net)
 			if err != nil {
 				return err
@@ -128,20 +129,20 @@ func syncCorporateOrder(log *logrus.Entry, ctx context.Context, stage string, o 
 	companyNet := net7.Sub(employeeNet)
 	companyTax := tax7.Sub(employeeTax)
 
-	createdAtString, err := timeToDynamoString(o.CreatedAt)
+	createdAtString, err := service.TimeToDynamoString(o.CreatedAt)
 	if err != nil {
 		return err
 	}
 
-	employeeRevenue := Revenue{
+	employeeRevenue := service.Revenue{
 		ID:             o.OrderID,
 		PaymentID:      o.ID.Hex(),
 		CreatedAt:      *createdAtString,
 		ShippingMethod: o.ShippingMethod,
 		Store:          s.Configuration.WPStoreKey,
-		Source:         RevenueSourceCorporate,
+		Source:         service.RevenueSourceCorporate,
 		Company:        o.CompanyKey,
-		Type:           RevenueTypeOrder,
+		Type:           service.RevenueTypeOrder,
 		Net7:           employeeNet.StringFixed(2),
 		Tax7:           employeeTax.StringFixed(2),
 		Tip:            tip.StringFixed(2),
@@ -151,15 +152,15 @@ func syncCorporateOrder(log *logrus.Entry, ctx context.Context, stage string, o 
 		return err
 	}
 
-	companyRevenue := Revenue{
+	companyRevenue := service.Revenue{
 		ID:             o.OrderID + corporateSuffix,
 		PaymentID:      o.ID.Hex() + corporateSuffix,
 		CreatedAt:      *createdAtString,
 		ShippingMethod: o.ShippingMethod,
 		Store:          s.Configuration.WPStoreKey,
-		Source:         RevenueSourceCorporate,
+		Source:         service.RevenueSourceCorporate,
 		Company:        o.CompanyKey,
-		Type:           RevenueTypeOrder,
+		Type:           service.RevenueTypeOrder,
 		Net7:           companyNet.StringFixed(2),
 		Tax7:           companyTax.StringFixed(2),
 		Tip:            tip.StringFixed(2),
