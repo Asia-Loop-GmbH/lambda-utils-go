@@ -22,9 +22,16 @@ func TestCheckOrder(t *testing.T) {
 	Expect(err).To(BeNil())
 }
 
-func TestCheckRefund(t *testing.T) {
+func TestCheckRefundWoo(t *testing.T) {
 	RegisterFailHandler(test.FailedHandler(t))
 
 	err := revenue.CheckRefund(logger.NewEmptyLogger(), context.TODO(), "dev", "263")
+	Expect(err).To(BeNil())
+}
+
+func TestCheckRefundNonWoo(t *testing.T) {
+	RegisterFailHandler(test.FailedHandler(t))
+
+	err := revenue.CheckRefund(logger.NewEmptyLogger(), context.TODO(), "dev", "62235c6c8ed20c2774179f40")
 	Expect(err).To(BeNil())
 }

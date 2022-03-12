@@ -17,13 +17,26 @@ func CheckRefund(log *logrus.Entry, ctx context.Context, stage, merchantRef stri
 	if err != nil {
 		return err
 	}
+
 	if !synced {
-		wooID, err := strconv.Atoi(merchantRef)
-		if err != nil {
-			return err
+		// not synchronized
+		_, err := primitive.ObjectIDFromHex(merchantRef)
+		isWoo := err != nil
+
+		if isWoo {
+			// woo refund
+			wooID, err := strconv.Atoi(merchantRef)
+			if err != nil {
+				return err
+			}
+			return SyncWooRefunds(log, ctx, stage, wooID)
 		}
-		return SyncWooRefunds(log, ctx, stage, wooID)
+
+		// pos/corporate refund
+		return fakeNonWooRefund(log, ctx, stage, merchantRef)
 	}
+
+	// already synchronized
 	return nil
 }
 
