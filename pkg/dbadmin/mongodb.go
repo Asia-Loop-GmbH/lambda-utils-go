@@ -10,4 +10,5 @@ const (
 	CollectionStore        = "stores"
 	CollectionTax          = "taxes"
 	CollectionUser         = "users"
+	CollectionTicket       = "tickets"
 )
