@@ -1,9 +1,9 @@
 package servicewoo
 
 type ProductVariationAttribute struct {
-	ID     int `json:"id"`
-	Name   int `json:"name"`
-	Option int `json:"option"`
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Option string `json:"option"`
 }
 
 type ProductVariation struct {
