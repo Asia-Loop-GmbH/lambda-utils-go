@@ -17,19 +17,3 @@ func TestOrderExists(t *testing.T) {
 	Expect(err).To(BeNil())
 	Expect(r1).To(BeFalse())
 }
-
-func TestRefundExistTrue(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	r1, err := refundExists(logger.NewEmptyLogger(), context.TODO(), "dev", "263")
-	Expect(err).To(BeNil())
-	Expect(r1).To(BeTrue())
-}
-
-func TestRefundExistFalse(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	r1, err := refundExists(logger.NewEmptyLogger(), context.TODO(), "dev", "259")
-	Expect(err).To(BeNil())
-	Expect(r1).To(BeFalse())
-}

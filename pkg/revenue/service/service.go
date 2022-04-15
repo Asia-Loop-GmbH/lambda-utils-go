@@ -36,3 +36,35 @@ func QueryByPaymentID(log *logrus.Entry, ctx context.Context, stage, paymentID s
 	}
 	return rs, nil
 }
+
+func GetByID(log *logrus.Entry, ctx context.Context, stage, orderID string) (*Revenue, error) {
+	dbClient, err := servicedynamodb.NewClient(log, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	table, err := servicessm.GetParameter(log, ctx, stage, "/dynamo/revenue", false)
+	if err != nil {
+		return nil, err
+	}
+
+	out, err := dbClient.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: table,
+		Key: map[string]types.AttributeValue{
+			"Id": &types.AttributeValueMemberS{Value: orderID},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if out.Item == nil {
+		return nil, ErrorNotFound
+	}
+
+	r := new(Revenue)
+	if err := attributevalue.UnmarshalMap(out.Item, r); err != nil {
+		return nil, err
+	}
+	return r, nil
+}
