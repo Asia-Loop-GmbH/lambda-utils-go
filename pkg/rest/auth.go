@@ -10,10 +10,14 @@ import (
 	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
 
+const (
+	HeaderAPIKey = "X-AL-API-Key"
+)
+
 func AuthorizeAnalyticsRequest(log *logrus.Entry, ctx context.Context, request *events.APIGatewayProxyRequest) error {
 	log.Infof("authorize analytics request [%s] [%s]", request.HTTPMethod, request.Path)
 
-	keyInReq, hasKey := request.Headers["X-API-Key"]
+	keyInReq, hasKey := request.Headers[HeaderAPIKey]
 	if !hasKey {
 		return errors.New("missing API key")
 	}
