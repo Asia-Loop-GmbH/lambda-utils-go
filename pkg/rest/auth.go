@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	HeaderAPIKey = "X-Al-Api-Key"
+	HeaderAPIKey = "x-al-api-key"
 )
 
 func AuthorizeAnalyticsRequest(log *logrus.Entry, ctx context.Context, request *events.APIGatewayProxyRequest) error {
