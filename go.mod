@@ -14,6 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.14.0
 	github.com/aws/aws-sdk-go-v2/service/sns v1.15.0
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.20.0
+	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0
 	github.com/nyaruka/phonenumbers v1.0.74
 	github.com/onsi/gomega v1.17.0
 	github.com/pkg/errors v0.9.1
