@@ -40,8 +40,8 @@ func Send(log *logrus.Entry, ctx context.Context, input SendInput, variables map
 		})
 	}
 
-	cc := make(mailjet.RecipientsV31, 0)
-	cc = append(cc, mailjet.RecipientV31{Email: ccEmail})
+	bcc := make(mailjet.RecipientsV31, 0)
+	bcc = append(bcc, mailjet.RecipientV31{Email: ccEmail})
 
 	info := []mailjet.InfoMessagesV31{
 		{
@@ -50,7 +50,7 @@ func Send(log *logrus.Entry, ctx context.Context, input SendInput, variables map
 				Name:  input.From.Name,
 			},
 			To:               &receivers,
-			Cc:               &cc,
+			Bcc:              &bcc,
 			Subject:          input.Subject,
 			TemplateID:       int(input.TemplateID),
 			TemplateLanguage: true,
