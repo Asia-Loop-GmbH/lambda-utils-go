@@ -1,6 +1,6 @@
 module github.com/asia-loop-gmbh/lambda-utils-go/v4
 
-go 1.17
+go 1.18
 
 require (
 	github.com/Masterminds/goutils v1.1.1

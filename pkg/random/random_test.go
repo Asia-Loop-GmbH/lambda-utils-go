@@ -20,7 +20,7 @@ func TestRandomString_Different(t *testing.T) {
 
 	exists := map[string]bool{}
 
-	for i := 0; i < 1000000; i++ {
+	for i := 0; i < 10000; i++ {
 		s := utils.String(10, true, true, true)
 		_, ok := exists[s]
 		assert.False(t, ok)
