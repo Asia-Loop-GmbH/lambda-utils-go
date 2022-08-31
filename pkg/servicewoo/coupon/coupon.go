@@ -5,20 +5,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
-	"github.com/shopspring/decimal"
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo"
-
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicewoo"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
+	"github.com/shopspring/decimal"
 )
 
-func IsValidAndHasEnough(log *logrus.Entry, ctx context.Context, stage, code, appliedAmount string) bool {
+func IsValidAndHasEnough(ctx context.Context, code, appliedAmount string) bool {
+	log := logger.FromContext(ctx)
 	log.Infof("check coupon valid and has enough amount: %s", code)
-	coupon, err := GetCouponByCode(log, ctx, stage, code)
+	coupon, err := GetCouponByCode(ctx, code)
 	if err != nil {
 		log.Errorf("could not get coupon '%s': %s", code, err)
 		return false
@@ -34,22 +34,28 @@ func IsValidAndHasEnough(log *logrus.Entry, ctx context.Context, stage, code, ap
 	return current.Cmp(toUse) > 0
 }
 
-func GetCouponByCode(log *logrus.Entry, ctx context.Context, stage, code string) (*servicewoo.Coupon, error) {
+func GetCouponByCode(ctx context.Context, code string) (*servicewoo.Coupon, error) {
+	log := logger.FromContext(ctx)
 	log.Infof("get coupon: %s", code)
 	code = strings.TrimSpace(code)
 	if code == "" {
 		return nil, fmt.Errorf("blank coupon code")
 	}
-	serviceWoo, err := servicewoo.NewWoo(log, ctx, stage)
+	serviceWoo, err := servicewoo.NewWoo(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := http.Get(serviceWoo.NewURL(log, fmt.Sprintf("/coupons?code=%s", code)))
+	response, err := http.Get(serviceWoo.NewURL(ctx, fmt.Sprintf("/coupons?code=%s", code)))
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Warnf("failed to close response body: %s", err)
+		}
+	}(response.Body)
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
@@ -69,9 +75,10 @@ func GetCouponByCode(log *logrus.Entry, ctx context.Context, stage, code string)
 	return &coupons[0], nil
 }
 
-func UpdateCouponByCode(log *logrus.Entry, ctx context.Context, stage, code, amount string) error {
+func UpdateCouponByCode(ctx context.Context, code, amount string) error {
+	log := logger.FromContext(ctx)
 	log.Infof("update coupon %s: %s", code, amount)
-	coupon, err := GetCouponByCode(log, ctx, stage, code)
+	coupon, err := GetCouponByCode(ctx, code)
 	if err != nil {
 		return err
 	}
@@ -89,7 +96,7 @@ func UpdateCouponByCode(log *logrus.Entry, ctx context.Context, stage, code, amo
 		Amount: newAmount.StringFixed(2),
 	}
 
-	serviceWoo, err := servicewoo.NewWoo(log, ctx, stage)
+	serviceWoo, err := servicewoo.NewWoo(ctx)
 	if err != nil {
 		return err
 	}
@@ -100,7 +107,7 @@ func UpdateCouponByCode(log *logrus.Entry, ctx context.Context, stage, code, amo
 	}
 	log.Infof("update coupon request body: %s", string(requestBody))
 
-	url := serviceWoo.NewURL(log, fmt.Sprintf("/coupons/%d", coupon.ID))
+	url := serviceWoo.NewURL(ctx, fmt.Sprintf("/coupons/%d", coupon.ID))
 	log.Infof("PUT -> %s", url)
 	httpClient := http.Client{}
 	request, err := http.NewRequest(
@@ -117,7 +124,12 @@ func UpdateCouponByCode(log *logrus.Entry, ctx context.Context, stage, code, amo
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Warnf("failed to close response body: %s", err)
+		}
+	}(response.Body)
 
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {

@@ -4,59 +4,71 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
 	"github.com/shopspring/decimal"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo/coupon"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicewoo/coupon"
 )
 
 func TestGetCouponByCode_Success(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	c, err := coupon.GetCouponByCode(logger.NewEmptyLogger(), context.TODO(), "dev", "TEST_COUPON")
-	Expect(err).To(BeNil())
-	Expect(c.Code).To(Equal("test_coupon"))
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	c, err := coupon.GetCouponByCode(ctx, "TEST_COUPON")
+	assert.NoError(t, err)
+	assert.Equal(t, "test_coupon", c.Code)
 }
 
 func TestGetCouponByCode_Fail(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	_, err := coupon.GetCouponByCode(logger.NewEmptyLogger(), context.TODO(), "dev", "TEST_COUPON_NOT_EXISTS")
-	Expect(err).To(Not(BeNil()))
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	_, err := coupon.GetCouponByCode(ctx, "TEST_COUPON_NOT_EXISTS")
+	assert.NoError(t, err)
 }
 
 func TestIsValidAndHasEnough_Success(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	valid := coupon.IsValidAndHasEnough(logger.NewEmptyLogger(), context.TODO(), "dev", "TEST_COUPON", "10.00")
-	Expect(valid).To(BeTrue())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	valid := coupon.IsValidAndHasEnough(ctx, "TEST_COUPON", "10.00")
+	assert.True(t, valid)
 }
 
 func TestIsValidAndHasEnough_Fail(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	valid := coupon.IsValidAndHasEnough(logger.NewEmptyLogger(), context.TODO(), "dev", "TEST_COUPON", "10000.00")
-	Expect(valid).To(BeFalse())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	valid := coupon.IsValidAndHasEnough(ctx, "TEST_COUPON", "10000.00")
+	assert.False(t, valid)
 }
 
 func TestUpdateCouponByCode_Success(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
 	amount := "0.01"
 
-	c, err := coupon.GetCouponByCode(logger.NewEmptyLogger(), context.TODO(), "dev", "TEST_COUPON")
-	Expect(err).To(BeNil())
+	c, err := coupon.GetCouponByCode(ctx, "TEST_COUPON")
+	assert.NoError(t, err)
 
 	current, err := decimal.NewFromString(c.Amount)
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 
-	err = coupon.UpdateCouponByCode(logger.NewEmptyLogger(), context.TODO(), "dev", "TEST_COUPON", amount)
-	Expect(err).To(BeNil())
+	err = coupon.UpdateCouponByCode(ctx, "TEST_COUPON", amount)
+	assert.NoError(t, err)
 
-	c, err = coupon.GetCouponByCode(logger.NewEmptyLogger(), context.TODO(), "dev", "TEST_COUPON")
-	Expect(err).To(BeNil())
+	c, err = coupon.GetCouponByCode(ctx, "TEST_COUPON")
+	assert.NoError(t, err)
 
 	updated, err := decimal.NewFromString(c.Amount)
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 
-	Expect(current.Sub(updated).StringFixed(2)).To(Equal(amount))
+	assert.Equal(t, amount, current.Sub(updated).StringFixed(2))
 }

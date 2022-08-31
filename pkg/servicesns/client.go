@@ -6,7 +6,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
-	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -14,7 +13,7 @@ var (
 	client     *sns.Client
 )
 
-func getClient(log *logrus.Entry, ctx context.Context) (*sns.Client, error) {
+func getClient(ctx context.Context) (*sns.Client, error) {
 	var err error
 	initClient.Do(func() {
 		cfg, e := config.LoadDefaultConfig(ctx)

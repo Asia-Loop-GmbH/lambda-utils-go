@@ -3,7 +3,7 @@ package api
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/dbadmin"
 )
 
 type CreateOrderRequest struct {

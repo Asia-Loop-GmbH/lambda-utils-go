@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/sirupsen/logrus"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
 
 type dbClient struct {
@@ -31,7 +31,8 @@ var clients = map[string]*dbClient{
 	},
 }
 
-func Disconnect(log *logrus.Entry, ctx context.Context) {
+func Disconnect(ctx context.Context) {
+	log := logger.FromContext(ctx)
 	for k, c := range clients {
 		if c.Client != nil {
 			log.Infof("disconnect client [%s]", k)
@@ -49,15 +50,21 @@ func Disconnect(log *logrus.Entry, ctx context.Context) {
 	}
 }
 
-func CorpCollection(log *logrus.Entry, ctx context.Context, stage, collection string) (*mongo.Collection, error) {
-	return getCollection(log, ctx, stage, "corp", collection)
+func CorpCollection(ctx context.Context, collection string) (*mongo.Collection, error) {
+	return getCollection(ctx, "corp", collection)
 }
 
-func AdminCollection(log *logrus.Entry, ctx context.Context, stage, collection string) (*mongo.Collection, error) {
-	return getCollection(log, ctx, stage, "admin", collection)
+func AdminCollection(ctx context.Context, collection string) (*mongo.Collection, error) {
+	return getCollection(ctx, "admin", collection)
 }
 
-func getCollection(log *logrus.Entry, ctx context.Context, stage, app, collection string) (*mongo.Collection, error) {
+func getCollection(ctx context.Context, app, collection string) (*mongo.Collection, error) {
+	log := logger.FromContext(ctx)
+
+	stage, ok := ctx.Value(commoncontext.FieldStage).(string)
+	if !ok {
+		return nil, fmt.Errorf("undefined stage in context")
+	}
 
 	client, ok := clients[app]
 	if !ok {
@@ -66,19 +73,19 @@ func getCollection(log *logrus.Entry, ctx context.Context, stage, app, collectio
 
 	client.Init.Do(func() {
 		log.Infof("first time init")
-		mongoHost, err := servicessm.GetParameter(log, ctx, "all", "/mongo/host", false)
+		mongoHost, err := servicessm.GetGlobalParameter(ctx, "/mongo/host", false)
 		if err != nil {
 			return
 		}
-		mongoUsername, err := servicessm.GetParameter(log, ctx, stage, fmt.Sprintf("/%s/mongo/username", app), false)
+		mongoUsername, err := servicessm.GetStageParameter(ctx, fmt.Sprintf("/%s/mongo/username", app), false)
 		if err != nil {
 			return
 		}
-		mongoPassword, err := servicessm.GetParameter(log, ctx, stage, fmt.Sprintf("/%s/mongo/password", app), true)
+		mongoPassword, err := servicessm.GetStageParameter(ctx, fmt.Sprintf("/%s/mongo/password", app), true)
 		if err != nil {
 			return
 		}
-		mongoDatabase, err := servicessm.GetParameter(log, ctx, stage, fmt.Sprintf("/%s/mongo/database", app), false)
+		mongoDatabase, err := servicessm.GetStageParameter(ctx, fmt.Sprintf("/%s/mongo/database", app), false)
 		if err != nil {
 			return
 		}

@@ -4,18 +4,19 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemongo"
 )
 
 func TestNextByStage(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	next, err := servicemongo.Next(logger.NewEmptyLogger(), context.Background(), "dev", "test")
-	Expect(err).To(BeNil())
-	Expect(next > 0).To(BeTrue())
-	servicemongo.Disconnect(logger.NewEmptyLogger(), context.Background())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.Background(), commoncontext.FieldStage, "dev")
+	next, err := servicemongo.Next(ctx, "test")
+	assert.NoError(t, err)
+	assert.True(t, next > 0)
+	servicemongo.Disconnect(ctx)
 }

@@ -1,29 +1,22 @@
 package normalizer_test
 
 import (
+	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/normalizer"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/normalizer"
 )
 
 func TestEmail(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	Expect(normalizer.Email(logger.NewEmptyLogger(), "LeNamtrUong@gmail.com")).To(Equal("lenamtruong@gmail.com"))
+	assert.Equal(t, "lenamtruong@gmail.com", normalizer.Email(context.Background(), "LeNamtrUong@gmail.com"))
 }
 
 func TestPhoneNumber(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	Expect(normalizer.PhoneNumber(logger.NewEmptyLogger(), "1701234567")).To(Equal("+49 170 1234567"))
+	assert.Equal(t, "+49 170 1234567", normalizer.PhoneNumber(context.Background(), "1701234567"))
 }
 
 func TestName(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	Expect(normalizer.Name(logger.NewEmptyLogger(), "  le     nam-truong     nhung  ")).To(Equal("Le Nam-Truong Nhung"))
+	assert.Equal(t, "Le Nam-Truong Nhung", normalizer.Name(context.Background(), "  le     nam-truong     nhung  "))
 }

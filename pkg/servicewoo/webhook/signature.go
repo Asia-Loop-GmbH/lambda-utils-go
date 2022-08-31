@@ -7,10 +7,9 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 )
 
 const (
@@ -19,8 +18,8 @@ const (
 
 // ValidateRequest
 // returns isPing, isValid, err
-func ValidateRequest(log *logrus.Entry, ctx context.Context, request *events.APIGatewayProxyRequest, webhookID int) (bool, bool, error) {
-	stage := request.RequestContext.Stage
+func ValidateRequest(ctx context.Context, request *events.APIGatewayProxyRequest, webhookID int) (bool, bool, error) {
+	log := logger.FromContext(ctx)
 	pingBody := fmt.Sprintf("webhook_id=%d", webhookID)
 
 	if request.Body == pingBody {
@@ -33,7 +32,7 @@ func ValidateRequest(log *logrus.Entry, ctx context.Context, request *events.API
 	log.Infof(request.Body)
 	log.Infof(fmt.Sprintf("%v", request.Headers))
 
-	secret, err := servicessm.GetParameter(log, ctx, stage, "/shop/woo/webhook/secret", true)
+	secret, err := servicessm.GetStageParameter(ctx, "/shop/woo/webhook/secret", true)
 	if err != nil {
 		log.Errorf("failed to get webhook secret from ssm: %s", err)
 		// ping=false, valid=false, err=err

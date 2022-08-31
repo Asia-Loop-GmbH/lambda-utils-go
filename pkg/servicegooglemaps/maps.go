@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sirupsen/logrus"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"googlemaps.github.io/maps"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
 )
 
 type ResolveAddressResult struct {
@@ -19,9 +19,10 @@ type ResolveAddressResult struct {
 	FormattedAddress string
 }
 
-func ResolveAddress(log *logrus.Entry, ctx context.Context, address string) (*ResolveAddressResult, error) {
+func ResolveAddress(ctx context.Context, address string) (*ResolveAddressResult, error) {
+	log := logger.FromContext(ctx)
 	log.Infof("resolve address: %s", address)
-	apiKey, err := servicessm.GetParameter(log, ctx, "all", "/google/maps/key", true)
+	apiKey, err := servicessm.GetStageParameter(ctx, "/google/maps/key", true)
 	if err != nil {
 		return nil, err
 	}

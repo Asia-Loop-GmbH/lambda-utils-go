@@ -2,21 +2,21 @@ package orderutils_test
 
 import (
 	"context"
+	"log"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/orderutils"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/orderutils"
 )
 
 func TestNextOrderInvoice(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	log := logger.NewEmptyLogger()
-	ctx := context.Background()
-
-	next, err := orderutils.NextOrderInvoice(log, ctx, "dev")
-	Expect(err).To(BeNil())
-	log.Infof("%s", *next)
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.Background(), commoncontext.FieldStage, "dev")
+	next, err := orderutils.NextOrderInvoice(ctx)
+	assert.NoError(t, err)
+	log.Printf("%s", *next)
 }

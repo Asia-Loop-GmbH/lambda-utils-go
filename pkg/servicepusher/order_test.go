@@ -4,51 +4,62 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicepusher"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicepusher"
 )
 
 func TestPublishOrderCreated(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicepusher.PublishOrderCreated(logger.NewEmptyLogger(), context.TODO(), "dev", &servicepusher.EventOrderCreatedData{})
-	Expect(err).To(BeNil())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := servicepusher.PublishOrderCreated(ctx, &servicepusher.EventOrderCreatedData{})
+	assert.NoError(t, err)
 }
 
 func TestPublishOrderDelivered(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicepusher.PublishOrderDelivered(logger.NewEmptyLogger(), context.TODO(), "dev", &servicepusher.EventOrderDeliveredData{})
-	Expect(err).To(BeNil())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := servicepusher.PublishOrderDelivered(ctx, &servicepusher.EventOrderDeliveredData{})
+	assert.NoError(t, err)
 }
 
 func TestPublishOrderPOSPaymentStarted(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicepusher.PublishOrderPOSPaymentStarted(logger.NewEmptyLogger(), context.TODO(), "dev", &servicepusher.EventOrderPOSPaymentStartedData{})
-	Expect(err).To(BeNil())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := servicepusher.PublishOrderPOSPaymentStarted(ctx, &servicepusher.EventOrderPOSPaymentStartedData{})
+	assert.NoError(t, err)
 }
 
 func TestPublishOrderPOSPaymentPaid(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicepusher.PublishOrderPOSPaymentPaid(logger.NewEmptyLogger(), context.TODO(), "dev", &servicepusher.EventOrderPOSPaymentPaidData{})
-	Expect(err).To(BeNil())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := servicepusher.PublishOrderPOSPaymentPaid(ctx, &servicepusher.EventOrderPOSPaymentPaidData{})
+	assert.NoError(t, err)
 }
 
 func TestPublishGroupFinalized(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicepusher.PublishGroupFinalized(logger.NewEmptyLogger(), context.TODO(), "dev", &servicepusher.EventGroupFinalizedData{})
-	Expect(err).To(BeNil())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := servicepusher.PublishGroupFinalized(ctx, &servicepusher.EventGroupFinalizedData{})
+	assert.NoError(t, err)
 }
 
 func TestPublishGroupDelivered(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicepusher.PublishGroupDelivered(logger.NewEmptyLogger(), context.TODO(), "dev", &servicepusher.EventGroupDeliveredData{})
-	Expect(err).To(BeNil())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := servicepusher.PublishGroupDelivered(ctx, &servicepusher.EventGroupDeliveredData{})
+	assert.NoError(t, err)
 }

@@ -4,24 +4,24 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	context2 "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/serviceadyen"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/random"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/serviceadyen"
 )
 
 func TestNewDropInPayment_Success(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), context2.FieldStage, "dev")
 	response, err := serviceadyen.NewDropInPayment(
-		logger.NewEmptyLogger(),
-		context.TODO(),
-		"dev",
+		ctx,
 		"10.23",
 		random.String(10, true, true, true),
 		"https://admin2-dev.asia-loop.com",
 	)
-	Expect(err).To(BeNil())
-	Expect(response).NotTo(BeNil())
+	assert.NoError(t, err)
+	assert.NotNil(t, response)
 }

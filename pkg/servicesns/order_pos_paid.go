@@ -4,25 +4,30 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sns/types"
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 )
 
 type EventOrderPOSPaidData struct {
 	OrderID string
 }
 
-func PublishOrderPOSPaid(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderPOSPaidData) error {
-	topic, err := servicessm.GetParameter(log, ctx, "all", "/sns/order/pos-invoice/arn", false)
+func PublishOrderPOSPaid(ctx context.Context, data *EventOrderPOSPaidData) error {
+	log := logger.FromContext(ctx)
+	stage, ok := ctx.Value(commoncontext.FieldStage).(string)
+	if !ok {
+		return fmt.Errorf("undefined stage in context")
+	}
+	topic, err := servicessm.GetGlobalParameter(ctx, "/sns/order/pos-invoice/arn", false)
 	if err != nil {
 		log.Errorf("failed to get topic arn: %s", err)
 		return err
 	}
-	client, err := getClient(log, ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -41,7 +46,7 @@ func PublishOrderPOSPaid(log *logrus.Entry, ctx context.Context, stage string, d
 			},
 		},
 	}
-	if _, err := client.Publish(ctx, params); err != nil {
+	if _, err := c.Publish(ctx, params); err != nil {
 		log.Errorf("failed to publish")
 		return err
 	}

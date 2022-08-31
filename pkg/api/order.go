@@ -1,6 +1,6 @@
 package api
 
-import "github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
+import "github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/dbadmin"
 
 type OrderDetails struct {
 	Order    dbadmin.Order    `json:"order"`

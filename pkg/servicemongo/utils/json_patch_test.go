@@ -1,20 +1,18 @@
 package utils_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo/utils"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemongo/utils"
 )
 
 func TestMongoUpdateFromJSONPatch(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
 
 	patch1 := utils.JSONPatch{
 		OP:    "replace",
@@ -50,10 +48,10 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 	patches := []utils.JSONPatch{patch1, patch2, patch3, patchObjectID, patchObjectIDArray}
 	now := time.Now()
 	objectIDPaths := []string{"objectId1.a", "objectId1.array"}
-	update, err := utils.MongoUpdateFromJSONPatch(logger.NewEmptyLogger(), &patches, &now, objectIDPaths)
+	update, err := utils.MongoUpdateFromJSONPatch(context.Background(), &patches, &now, objectIDPaths)
 
-	Expect(err).To(BeNil())
-	Expect(update).To(Equal(bson.A{
+	assert.NoError(t, err)
+	expected := bson.A{
 		bson.M{
 			"$set": bson.M{
 				"a.b.c": "string",
@@ -84,5 +82,6 @@ func TestMongoUpdateFromJSONPatch(t *testing.T) {
 				"updatedAt": primitive.NewDateTimeFromTime(now),
 			},
 		},
-	}))
+	}
+	assert.Equal(t, expected, update)
 }

@@ -2,8 +2,6 @@ package servicemailjet
 
 import (
 	"context"
-
-	"github.com/sirupsen/logrus"
 )
 
 type SendOrderVariables struct {
@@ -15,8 +13,8 @@ type SendOrderVariables struct {
 	ActionEnabled string
 }
 
-func SendOrder(log *logrus.Entry, ctx context.Context, input SendInput, variables SendOrderVariables) error {
-	return Send(log, ctx, input, map[string]interface{}{
+func SendOrder(ctx context.Context, input SendInput, variables SendOrderVariables) error {
+	return Send(ctx, input, map[string]interface{}{
 		"firstName":     variables.FirstName,
 		"title":         variables.Title,
 		"content":       variables.Content,

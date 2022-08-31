@@ -5,14 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/adyen/adyen-go-api-library/v5/src/checkout"
-	"github.com/shopspring/decimal"
-	"github.com/sirupsen/logrus"
-
 	"github.com/asia-loop-gmbh/lambda-types-go/v2/pkg/admin"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
+	"github.com/shopspring/decimal"
 )
 
 type SessionResponse struct {
@@ -20,9 +20,10 @@ type SessionResponse struct {
 	SessionData string `json:"sessionData"`
 }
 
-func NewDropInPayment(log *logrus.Entry, ctx context.Context, stage, value, ref, returnURL string) (*admin.PaymentDropInResponse, error) {
+func NewDropInPayment(ctx context.Context, value, ref, returnURL string) (*admin.PaymentDropInResponse, error) {
+	log := logger.FromContext(ctx)
 	log.Infof("new drop in payment for order [%s]", ref)
-	client, err := newClient(log, ctx, stage)
+	client, err := newClient(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +58,12 @@ func NewDropInPayment(log *logrus.Entry, ctx context.Context, stage, value, ref,
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Warnf("failed to close response body: %s", err)
+		}
+	}(response.Body)
 
 	if response.StatusCode >= 300 {
 		responseBody, err := ioutil.ReadAll(response.Body)

@@ -4,11 +4,10 @@ import (
 	"context"
 	"sync"
 
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"github.com/pkg/errors"
 	"github.com/pusher/pusher-http-go/v5"
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
 
 const (
@@ -20,21 +19,22 @@ var (
 	client     *pusher.Client
 )
 
-func getClient(log *logrus.Entry, ctx context.Context, stage string) (*pusher.Client, error) {
+func getClient(ctx context.Context) (*pusher.Client, error) {
+	log := logger.FromContext(ctx)
 	var err error
 	initClient.Do(func() {
-		log.Infof("init pusher in [%s]", stage)
-		app, e := servicessm.GetParameter(log, ctx, stage, "/pusher/app", false)
+		log.Infof("init pusher")
+		app, e := servicessm.GetStageParameter(ctx, "/pusher/app", false)
 		if e != nil {
 			err = e
 			return
 		}
-		key, e := servicessm.GetParameter(log, ctx, stage, "/pusher/key", false)
+		key, e := servicessm.GetStageParameter(ctx, "/pusher/key", false)
 		if e != nil {
 			err = e
 			return
 		}
-		secret, e := servicessm.GetParameter(log, ctx, stage, "/pusher/secret", true)
+		secret, e := servicessm.GetStageParameter(ctx, "/pusher/secret", true)
 		if e != nil {
 			err = e
 			return
@@ -46,11 +46,11 @@ func getClient(log *logrus.Entry, ctx context.Context, stage string) (*pusher.Cl
 			Cluster: clusterEU,
 			Secure:  true,
 		}
-		log.Infof("pusher initialized in [%s]", stage)
+		log.Infof("pusher initialized")
 	})
 	if err != nil {
-		log.Errorf("failed to initialize pusher in [%s]: %s", stage, err)
-		return nil, errors.Wrapf(err, "failed to initialize pusher in [%s]", stage)
+		log.Errorf("failed to initialize pusher: %s", err)
+		return nil, errors.Wrapf(err, "failed to initialize pusher")
 	}
 	return client, nil
 }

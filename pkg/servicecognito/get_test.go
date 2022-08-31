@@ -2,23 +2,24 @@ package servicecognito_test
 
 import (
 	"context"
+	"log"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicecognito"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicecognito"
 )
 
 func TestGetUser(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	log := logger.NewEmptyLogger()
-
-	user, err := servicecognito.GetUser(log, context.TODO(), &servicecognito.GetUserData{
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	user, err := servicecognito.GetUser(ctx, &servicecognito.GetUserData{
 		Username: "lenamtruong@gmail.com",
 	})
-	Expect(err).To(BeNil())
-	Expect(user.Username).To(Equal("lenamtruong@gmail.com"))
-	log.Infof("%v", user)
+	assert.NoError(t, err)
+	assert.Equal(t, "lenamtruong@gmail.com", user.Username)
+	log.Printf("%v", user)
 }

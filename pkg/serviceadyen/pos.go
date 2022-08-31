@@ -9,14 +9,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/random"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 )
 
-func NewTender(log *logrus.Entry, ctx context.Context, stage, pos, orderId string, amount float32) error {
-	log.Infof("new POS payment in %s: order %s [%f]", stage, orderId, amount)
-	client, err := newClient(log, ctx, stage)
+func NewTender(ctx context.Context, pos, orderId string, amount float32) error {
+	log := logger.FromContext(ctx)
+
+	log.Infof("new POS payment: order %s [%f]", orderId, amount)
+	client, err := newClient(ctx)
 	if err != nil {
 		return err
 	}

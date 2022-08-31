@@ -4,17 +4,18 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemailjet"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemailjet"
 )
 
 func TestSend(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicemailjet.Send(logger.NewEmptyLogger(), context.TODO(), servicemailjet.SendInput{
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := servicemailjet.Send(ctx, servicemailjet.SendInput{
 		From: servicemailjet.Email{
 			Address: "noreply@asialoop.de",
 			Name:    "Asia Loop GmbH",
@@ -34,5 +35,5 @@ func TestSend(t *testing.T) {
 		"actionEnabled": "true",
 	})
 
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 }

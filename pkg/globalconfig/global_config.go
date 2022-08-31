@@ -3,15 +3,14 @@ package globalconfig
 import (
 	"context"
 
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/dbadmin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemongo"
 )
 
-func GetGlobalConfig(log *logrus.Entry, ctx context.Context, stage string) (*dbadmin.GlobalConfig, error) {
-	colGlbCfg, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionGlobalConfig)
+func GetGlobalConfig(ctx context.Context) (*dbadmin.GlobalConfig, error) {
+	colGlbCfg, err := servicemongo.AdminCollection(ctx, dbadmin.CollectionGlobalConfig)
 	if err != nil {
 		return nil, err
 	}

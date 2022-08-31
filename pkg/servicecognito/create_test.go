@@ -2,28 +2,28 @@ package servicecognito_test
 
 import (
 	"context"
+	"log"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicecognito"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicecognito"
 )
 
 func TestCreateUser(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	log := logger.NewEmptyLogger()
+	if testing.Short() {
+		t.Skip()
+	}
 	ctx := context.TODO()
 
-	err := servicecognito.DeleteUser(log, ctx, &servicecognito.DeleteUserData{
+	err := servicecognito.DeleteUser(ctx, &servicecognito.DeleteUserData{
 		Username: "lenamtruong+unitest@gmail.com",
 	})
 	if err != nil {
-		log.Infof("it's ok, just a cleanup")
+		log.Printf("it's ok, just a cleanup")
 	}
 
-	err = servicecognito.CreateUser(log, ctx, &servicecognito.CreateUserData{
+	err = servicecognito.CreateUser(ctx, &servicecognito.CreateUserData{
 		Username:          "lenamtruong+unitest@gmail.com",
 		TemporaryPassword: "Toor***???1234",
 		CompanyKey:        "SIEMENS",
@@ -32,24 +32,24 @@ func TestCreateUser(t *testing.T) {
 		LastName:          "Le",
 		Role:              "COMPANY",
 	})
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 
-	user, err := servicecognito.GetUser(log, ctx, &servicecognito.GetUserData{
+	user, err := servicecognito.GetUser(ctx, &servicecognito.GetUserData{
 		Username: "lenamtruong+unitest@gmail.com",
 	})
-	Expect(err).To(BeNil())
-	Expect(user.Username).To(Equal("lenamtruong+unitest@gmail.com"))
-	Expect(user.FirstName).To(Equal("Nam Truong"))
-	Expect(user.LastName).To(Equal("Le"))
-	Expect(user.Company).To(Equal("SIEMENS"))
+	assert.NoError(t, err)
+	assert.Equal(t, "lenamtruong+unitest@gmail.com", user.Username)
+	assert.Equal(t, "Nam Truong", user.FirstName)
+	assert.Equal(t, "Le", user.LastName)
+	assert.Equal(t, "SIEMENS", user.Company)
 
-	err = servicecognito.DeleteUser(log, ctx, &servicecognito.DeleteUserData{
+	err = servicecognito.DeleteUser(ctx, &servicecognito.DeleteUserData{
 		Username: "lenamtruong+unitest@gmail.com",
 	})
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 
-	_, err = servicecognito.GetUser(log, ctx, &servicecognito.GetUserData{
+	_, err = servicecognito.GetUser(ctx, &servicecognito.GetUserData{
 		Username: "lenamtruong+unitest@gmail.com",
 	})
-	Expect(err).ToNot(BeNil())
+	assert.NoError(t, err)
 }

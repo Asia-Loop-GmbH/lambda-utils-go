@@ -4,18 +4,19 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicesns"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicesns"
 )
 
 func TestPublishOrderPOSPaid(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicesns.PublishOrderPOSPaid(logger.NewEmptyLogger(), context.TODO(), "dev", &servicesns.EventOrderPOSPaidData{
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.Background(), commoncontext.FieldStage, "dev")
+	err := servicesns.PublishOrderPOSPaid(ctx, &servicesns.EventOrderPOSPaidData{
 		OrderID: "POS-810052",
 	})
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 }

@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -25,7 +26,8 @@ const (
 	mongoAttributeUpdatedAt  = "updatedAt"
 )
 
-func MongoUpdateFromJSONPatch(log *logrus.Entry, patches *[]JSONPatch, now *time.Time, objectIDPaths []string) (bson.A, error) {
+func MongoUpdateFromJSONPatch(ctx context.Context, patches *[]JSONPatch, now *time.Time, objectIDPaths []string) (bson.A, error) {
+	log := logger.FromContext(ctx)
 	log.Infof("create update bson from json patch: %v", patches)
 	result := bson.A{}
 	for _, patch := range *patches {

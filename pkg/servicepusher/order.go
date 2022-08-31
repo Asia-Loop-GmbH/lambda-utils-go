@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sirupsen/logrus"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 )
 
 const (
@@ -20,12 +20,13 @@ type EventOrderCreatedData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishOrderCreated(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderCreatedData) error {
-	client, err := getClient(log, ctx, stage)
+func PublishOrderCreated(ctx context.Context, data *EventOrderCreatedData) error {
+	log := logger.FromContext(ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
-	if err := client.Trigger(storeChannel(data.StoreID), eventOrderCreatedName, data); err != nil {
+	if err := c.Trigger(storeChannel(data.StoreID), eventOrderCreatedName, data); err != nil {
 		log.Errorf("failed to publish event [%s]: %v", eventOrderCreatedName, data)
 		return err
 	}
@@ -37,12 +38,13 @@ type EventOrderDeliveredData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishOrderDelivered(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderDeliveredData) error {
-	client, err := getClient(log, ctx, stage)
+func PublishOrderDelivered(ctx context.Context, data *EventOrderDeliveredData) error {
+	log := logger.FromContext(ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
-	if err := client.Trigger(storeChannel(data.StoreID), eventOrderDeliveredName, data); err != nil {
+	if err := c.Trigger(storeChannel(data.StoreID), eventOrderDeliveredName, data); err != nil {
 		log.Errorf("failed to publish event [%s]: %v", eventOrderDeliveredName, data)
 		return err
 	}
@@ -55,12 +57,13 @@ type EventOrderPOSPaymentStartedData struct {
 	OrderID string `json:"orderId"`
 }
 
-func PublishOrderPOSPaymentStarted(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderPOSPaymentStartedData) error {
-	client, err := getClient(log, ctx, stage)
+func PublishOrderPOSPaymentStarted(ctx context.Context, data *EventOrderPOSPaymentStartedData) error {
+	log := logger.FromContext(ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
-	if err := client.Trigger(storeChannel(data.StoreID), eventOrderPOSPaymentStartedName, data); err != nil {
+	if err := c.Trigger(storeChannel(data.StoreID), eventOrderPOSPaymentStartedName, data); err != nil {
 		log.Errorf("failed to publish event [%s]: %v", eventOrderPOSPaymentStartedName, data)
 		return err
 	}
@@ -73,12 +76,13 @@ type EventOrderPOSPaymentPaidData struct {
 	OrderID string `json:"orderId"`
 }
 
-func PublishOrderPOSPaymentPaid(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderPOSPaymentPaidData) error {
-	client, err := getClient(log, ctx, stage)
+func PublishOrderPOSPaymentPaid(ctx context.Context, data *EventOrderPOSPaymentPaidData) error {
+	log := logger.FromContext(ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
-	if err := client.Trigger(storeChannel(data.StoreID), eventOrderPOSPaymentPaidName, data); err != nil {
+	if err := c.Trigger(storeChannel(data.StoreID), eventOrderPOSPaymentPaidName, data); err != nil {
 		log.Errorf("failed to publish event [%s]: %v", eventOrderPOSPaymentPaidName, data)
 		return err
 	}
@@ -90,12 +94,13 @@ type EventGroupFinalizedData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishGroupFinalized(log *logrus.Entry, ctx context.Context, stage string, data *EventGroupFinalizedData) error {
-	client, err := getClient(log, ctx, stage)
+func PublishGroupFinalized(ctx context.Context, data *EventGroupFinalizedData) error {
+	log := logger.FromContext(ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
-	if err := client.Trigger(storeChannel(data.StoreID), eventGroupFinalizedName, data); err != nil {
+	if err := c.Trigger(storeChannel(data.StoreID), eventGroupFinalizedName, data); err != nil {
 		log.Errorf("failed to publish event [%s]: %v", eventGroupFinalizedName, data)
 		return err
 	}
@@ -107,12 +112,13 @@ type EventGroupDeliveredData struct {
 	StoreID string `json:"storeId"`
 }
 
-func PublishGroupDelivered(log *logrus.Entry, ctx context.Context, stage string, data *EventGroupDeliveredData) error {
-	client, err := getClient(log, ctx, stage)
+func PublishGroupDelivered(ctx context.Context, data *EventGroupDeliveredData) error {
+	log := logger.FromContext(ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
-	if err := client.Trigger(storeChannel(data.StoreID), eventGroupDeliveredName, data); err != nil {
+	if err := c.Trigger(storeChannel(data.StoreID), eventGroupDeliveredName, data); err != nil {
 		log.Errorf("failed to publish event [%s]: %v", eventGroupDeliveredName, data)
 		return err
 	}

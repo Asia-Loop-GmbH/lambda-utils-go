@@ -5,26 +5,27 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/api"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/dbadmin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/normalizer"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/random"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicegooglemaps"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemongo"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/api"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/normalizer"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicegooglemaps"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
 )
 
-func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOptions *api.CreateOrderOrderOptions,
+func CreateOrder(ctx context.Context, orderOptions *api.CreateOrderOrderOptions,
 	addressOption *api.CreateOrderAddressOptions) (*dbadmin.Order, error) {
+	log := logger.FromContext(ctx)
+
 	log.Infof("create order: %s", orderOptions.OrderID)
 
-	firstName := normalizer.Name(log, addressOption.FirstName)
-	lastName := normalizer.Name(log, addressOption.LastName)
-	telephone := normalizer.PhoneNumber(log, addressOption.Telephone)
-	email := normalizer.Email(log, addressOption.Email)
+	firstName := normalizer.Name(ctx, addressOption.FirstName)
+	lastName := normalizer.Name(ctx, addressOption.LastName)
+	telephone := normalizer.PhoneNumber(ctx, addressOption.Telephone)
+	email := normalizer.Email(ctx, addressOption.Email)
 
 	var addressLine1 string
 	addressLine2 := addressOption.AddressLine2
@@ -40,7 +41,7 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		addressOption.City,
 	)
 
-	resolveAddressResult, err := servicegooglemaps.ResolveAddress(log, ctx, inputAddress)
+	resolveAddressResult, err := servicegooglemaps.ResolveAddress(ctx, inputAddress)
 	if err != nil {
 		log.Warnf("failed to resolve address: %s", inputAddress)
 		addressLine1 = addressOption.AddressLine1
@@ -56,7 +57,7 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		validAddress = true
 	}
 
-	collectionCustomer, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionCustomer)
+	collectionCustomer, err := servicemongo.AdminCollection(ctx, dbadmin.CollectionCustomer)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +101,7 @@ func CreateOrder(log *logrus.Entry, ctx context.Context, stage string, orderOpti
 		customer = &newCustomer
 	}
 
-	collectionOrder, err := servicemongo.AdminCollection(log, ctx, stage, dbadmin.CollectionOrder)
+	collectionOrder, err := servicemongo.AdminCollection(ctx, dbadmin.CollectionOrder)
 	if err != nil {
 		return nil, err
 	}
