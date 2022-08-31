@@ -22,7 +22,7 @@ type ResolveAddressResult struct {
 func ResolveAddress(ctx context.Context, address string) (*ResolveAddressResult, error) {
 	log := logger.FromContext(ctx)
 	log.Infof("resolve address: %s", address)
-	apiKey, err := servicessm.GetStageParameter(ctx, "/google/maps/key", true)
+	apiKey, err := servicessm.GetGlobalParameter(ctx, "/google/maps/key", true)
 	if err != nil {
 		return nil, err
 	}
