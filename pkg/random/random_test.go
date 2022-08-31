@@ -17,10 +17,13 @@ func TestRandomString_Success(t *testing.T) {
 }
 
 func TestRandomString_Different(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
 
 	exists := map[string]bool{}
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1000000; i++ {
 		s := utils.String(10, true, true, true)
 		_, ok := exists[s]
 		assert.False(t, ok)
@@ -29,6 +32,9 @@ func TestRandomString_Different(t *testing.T) {
 }
 
 func TestRandomString_Different_OrderID(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
 
 	exists := map[string]bool{}
 
