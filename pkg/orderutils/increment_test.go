@@ -12,11 +12,15 @@ import (
 )
 
 func TestNextOrderInvoice(t *testing.T) {
-	if testing.Short() {
-		t.Skip()
-	}
 	ctx := context.WithValue(context.Background(), commoncontext.FieldStage, "dev")
 	next, err := orderutils.NextOrderInvoice(ctx)
+	assert.NoError(t, err)
+	log.Printf("%s", *next)
+}
+
+func TestNextOrderInvoiceLieferando(t *testing.T) {
+	ctx := context.WithValue(context.Background(), commoncontext.FieldStage, "dev")
+	next, err := orderutils.NextOrderInvoiceLieferando(ctx)
 	assert.NoError(t, err)
 	log.Printf("%s", *next)
 }
