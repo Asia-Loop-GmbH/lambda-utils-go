@@ -4,17 +4,17 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemailjet"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemailjet"
 )
 
 func TestSendOrder(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	err := servicemailjet.SendOrder(logger.NewEmptyLogger(), context.TODO(), servicemailjet.SendInput{
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.TODO()
+	err := servicemailjet.SendOrder(ctx, servicemailjet.SendInput{
 		From: servicemailjet.Email{
 			Address: "noreply@asialoop.de",
 			Name:    "Asia Loop GmbH",
@@ -34,5 +34,5 @@ func TestSendOrder(t *testing.T) {
 		ActionEnabled: "true",
 	})
 
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 }

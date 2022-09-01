@@ -5,19 +5,18 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
-	"github.com/sirupsen/logrus"
 )
 
 type GetUserData struct {
 	Username string `json:"username"`
 }
 
-func GetUser(log *logrus.Entry, ctx context.Context, data *GetUserData) (*User, error) {
-	client, err := getClient(log, ctx)
+func GetUser(ctx context.Context, data *GetUserData) (*User, error) {
+	c, err := getClient(ctx)
 	if err != nil {
 		return nil, err
 	}
-	out, err := client.AdminGetUser(ctx, &cognitoidentityprovider.AdminGetUserInput{
+	out, err := c.AdminGetUser(ctx, &cognitoidentityprovider.AdminGetUserInput{
 		Username:   aws.String(data.Username),
 		UserPoolId: aws.String(cognitoPool),
 	})

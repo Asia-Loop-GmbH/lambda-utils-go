@@ -4,26 +4,29 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo/order"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicewoo/order"
 )
 
 func TestGet(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	o, err := order.Get(logger.NewEmptyLogger(), context.TODO(), "dev", 123)
-	Expect(err).To(BeNil())
-	Expect(o.ID).To(Equal(123))
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	o, err := order.Get(ctx, 123)
+	assert.NoError(t, err)
+	assert.Equal(t, 123, o.ID)
 }
 
 func TestGetRefunds(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	refunds, err := order.GetRefunds(logger.NewEmptyLogger(), context.TODO(), "dev", 245)
-	Expect(err).To(BeNil())
-	Expect(len(refunds)).To(Equal(1))
-	Expect(refunds[0].ID).To(Equal(262))
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	refunds, err := order.GetRefunds(ctx, 245)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(refunds))
+	assert.Equal(t, 262, refunds[0].ID)
 }

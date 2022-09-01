@@ -4,26 +4,31 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sns/types"
-	"github.com/sirupsen/logrus"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
 
 type EventOrderFinalizedData struct {
 	ID primitive.ObjectID
 }
 
-func PublishOrderFinalized(log *logrus.Entry, ctx context.Context, stage string, data *EventOrderFinalizedData) error {
-	topic, err := servicessm.GetParameter(log, ctx, "all", "/sns/order/finalized/arn", false)
+func PublishOrderFinalized(ctx context.Context, data *EventOrderFinalizedData) error {
+	log := logger.FromContext(ctx)
+	stage, ok := ctx.Value(commoncontext.FieldStage).(string)
+	if !ok {
+		return fmt.Errorf("undefined stage in context")
+	}
+	topic, err := servicessm.GetGlobalParameter(ctx, "/sns/order/finalized/arn", false)
 	if err != nil {
 		log.Errorf("failed to get topic arn: %s", err)
 		return err
 	}
-	client, err := getClient(log, ctx)
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -42,7 +47,7 @@ func PublishOrderFinalized(log *logrus.Entry, ctx context.Context, stage string,
 			},
 		},
 	}
-	if _, err := client.Publish(ctx, params); err != nil {
+	if _, err := c.Publish(ctx, params); err != nil {
 		log.Errorf("failed to publish")
 		return err
 	}

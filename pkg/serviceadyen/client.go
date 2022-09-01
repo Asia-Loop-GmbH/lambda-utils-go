@@ -6,9 +6,9 @@ import (
 
 	"github.com/adyen/adyen-go-api-library/v5/src/adyen"
 	"github.com/adyen/adyen-go-api-library/v5/src/common"
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 )
 
 var (
@@ -19,9 +19,15 @@ var (
 	}
 )
 
-func newClient(log *logrus.Entry, ctx context.Context, stage string) (*adyen.APIClient, error) {
+func newClient(ctx context.Context) (*adyen.APIClient, error) {
+	log := logger.FromContext(ctx)
+	stage, ok := ctx.Value(commoncontext.FieldStage).(string)
+	if !ok {
+		return nil, fmt.Errorf("undefined stage in context")
+	}
+
 	log.Infof("new adyen client: %s", stage)
-	apiKey, err := servicessm.GetParameter(log, ctx, stage, "/adyen/key", true)
+	apiKey, err := servicessm.GetStageParameter(ctx, "/adyen/key", true)
 	if err != nil {
 		return nil, err
 	}

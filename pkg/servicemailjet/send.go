@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/mailjet/mailjet-apiv3-go/v3"
-	"github.com/sirupsen/logrus"
 )
 
 type TemplateID int
@@ -26,8 +25,8 @@ type SendInput struct {
 	TemplateID TemplateID
 }
 
-func Send(log *logrus.Entry, ctx context.Context, input SendInput, variables map[string]interface{}) error {
-	c, err := newClient(log, ctx)
+func Send(ctx context.Context, input SendInput, variables map[string]interface{}) error {
+	c, err := newClient(ctx)
 	if err != nil {
 		return err
 	}

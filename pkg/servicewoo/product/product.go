@@ -4,24 +4,25 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicewoo"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 )
 
 const (
 	perPage = 100
 )
 
-func Get(log *logrus.Entry, ctx context.Context, stage string) ([]servicewoo.Product, error) {
+func Get(ctx context.Context) ([]servicewoo.Product, error) {
+	log := logger.FromContext(ctx)
 	log.Infof("get all products from woo")
 	page := 1
 	result := make([]servicewoo.Product, 0)
 	for true {
-		ps, err := getPage(log, ctx, stage, page)
+		ps, err := getPage(ctx, page)
 		if err != nil {
 			return nil, err
 		}
@@ -38,19 +39,25 @@ func Get(log *logrus.Entry, ctx context.Context, stage string) ([]servicewoo.Pro
 	return result, nil
 }
 
-func getPage(log *logrus.Entry, ctx context.Context, stage string, page int) ([]servicewoo.Product, error) {
+func getPage(ctx context.Context, page int) ([]servicewoo.Product, error) {
+	log := logger.FromContext(ctx)
 	log.Infof("get products from woo page [%d], per_page [%d]", page, perPage)
-	woo, err := servicewoo.NewWoo(log, ctx, stage)
+	woo, err := servicewoo.NewWoo(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	url := woo.NewURL(log, fmt.Sprintf("/products?page=%d&per_page=%d", page, perPage))
+	url := woo.NewURL(ctx, fmt.Sprintf("/products?page=%d&per_page=%d", page, perPage))
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Warnf("failed to close response body: %s", err)
+		}
+	}(res.Body)
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("woo returns [%s]", res.Status)
 	}

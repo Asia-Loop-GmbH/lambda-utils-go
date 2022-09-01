@@ -2,25 +2,28 @@ package servicegooglemaps_test
 
 import (
 	"context"
-
-	. "github.com/onsi/gomega"
-
 	"testing"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicegooglemaps"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicegooglemaps"
 )
 
 func TestResolveAddress(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	Expect(servicegooglemaps.ResolveAddress(logger.NewEmptyLogger(), context.TODO(), "rudolf-schwarz platz 1 frankfurt")).To(Equal(&servicegooglemaps.ResolveAddressResult{
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	result, err := servicegooglemaps.ResolveAddress(ctx, "rudolf-schwarz platz 1 frankfurt")
+	expected := &servicegooglemaps.ResolveAddressResult{
 		StreetNumber:     "1",
 		Street:           "Rudolf-Schwarz-Platz",
 		City:             "Frankfurt am Main",
 		Postcode:         "60438",
 		State:            "Hessen",
 		FormattedAddress: "Rudolf-Schwarz-Platz 1, 60438 Frankfurt am Main, Deutschland",
-	}))
+	}
+	assert.NoError(t, err)
+	assert.Equal(t, expected, result)
 }

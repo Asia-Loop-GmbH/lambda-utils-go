@@ -5,17 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemongo"
 )
 
 const (
 	incrementOrderInvoiceKey = "ORDER_INVOICE"
 )
 
-func NextOrderInvoice(log *logrus.Entry, ctx context.Context, stage string) (*string, error) {
-	next, err := servicemongo.Next(log, ctx, stage, incrementOrderInvoiceKey)
+func NextOrderInvoice(ctx context.Context) (*string, error) {
+	next, err := servicemongo.Next(ctx, incrementOrderInvoiceKey)
 	if err != nil {
 		return nil, err
 	}

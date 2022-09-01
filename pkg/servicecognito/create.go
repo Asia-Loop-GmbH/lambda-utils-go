@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
-	"github.com/sirupsen/logrus"
 )
 
 type CreateUserData struct {
@@ -20,8 +19,8 @@ type CreateUserData struct {
 	Role              string `json:"role"`
 }
 
-func CreateUser(log *logrus.Entry, ctx context.Context, data *CreateUserData) error {
-	client, err := getClient(log, ctx)
+func CreateUser(ctx context.Context, data *CreateUserData) error {
+	c, err := getClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -55,7 +54,7 @@ func CreateUser(log *logrus.Entry, ctx context.Context, data *CreateUserData) er
 			Value: aws.String(fmt.Sprintf("%s %s", data.FirstName, data.LastName)),
 		},
 	}
-	_, err = client.AdminCreateUser(ctx, &cognitoidentityprovider.AdminCreateUserInput{
+	_, err = c.AdminCreateUser(ctx, &cognitoidentityprovider.AdminCreateUserInput{
 		UserPoolId:        aws.String(cognitoPool),
 		Username:          aws.String(data.Username),
 		TemporaryPassword: aws.String(data.TemporaryPassword),
@@ -65,7 +64,7 @@ func CreateUser(log *logrus.Entry, ctx context.Context, data *CreateUserData) er
 		return err
 	}
 
-	_, err = client.AdminAddUserToGroup(ctx, &cognitoidentityprovider.AdminAddUserToGroupInput{
+	_, err = c.AdminAddUserToGroup(ctx, &cognitoidentityprovider.AdminAddUserToGroupInput{
 		UserPoolId: aws.String(cognitoPool),
 		Username:   aws.String(data.Username),
 		GroupName:  aws.String(data.Role),

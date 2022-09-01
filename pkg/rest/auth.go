@@ -3,18 +3,19 @@ package rest
 import (
 	"context"
 
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
 
 const (
 	HeaderAPIKey = "x-al-api-key"
 )
 
-func AuthorizeAnalyticsRequest(log *logrus.Entry, ctx context.Context, request *events.APIGatewayProxyRequest) error {
+func AuthorizeAnalyticsRequest(ctx context.Context, request *events.APIGatewayProxyRequest) error {
+	log := logger.FromContext(ctx)
+
 	log.Infof("authorize analytics request [%s] [%s]", request.HTTPMethod, request.Path)
 
 	keyInReq, hasKey := request.Headers[HeaderAPIKey]
@@ -22,7 +23,7 @@ func AuthorizeAnalyticsRequest(log *logrus.Entry, ctx context.Context, request *
 		return errors.New("missing API key")
 	}
 
-	key, err := servicessm.GetParameter(log, ctx, "all", "/analytics/key", true)
+	key, err := servicessm.GetGlobalParameter(ctx, "/analytics/key", true)
 	if err != nil {
 		return err
 	}

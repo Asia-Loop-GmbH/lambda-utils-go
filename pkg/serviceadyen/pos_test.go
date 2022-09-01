@@ -4,17 +4,19 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/serviceadyen"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/random"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/serviceadyen"
 )
 
 func TestNewTender(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
+	if testing.Short() {
+		t.Skip()
+	}
 	orderId := random.String(6, true, true, true)
-	Expect(serviceadyen.NewTender(logger.NewEmptyLogger(), context.TODO(), "dev", "S1F2-000158213300585", orderId, 10.12)).To(BeNil())
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	err := serviceadyen.NewTender(ctx, "S1F2-000158213300585", orderId, 10.12)
+	assert.Nil(t, err)
 }

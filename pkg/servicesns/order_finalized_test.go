@@ -4,20 +4,21 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicesns"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicesns"
 )
 
 func TestPublishOrderFinalized(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
 	id, _ := primitive.ObjectIDFromHex("622a5275b73e4d6262fd8acf")
-	err := servicesns.PublishOrderFinalized(logger.NewEmptyLogger(), context.TODO(), "dev", &servicesns.EventOrderFinalizedData{
+	err := servicesns.PublishOrderFinalized(ctx, &servicesns.EventOrderFinalizedData{
 		ID: id,
 	})
-	Expect(err).To(BeNil())
+	assert.NoError(t, err)
 }

@@ -1,12 +1,14 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/sirupsen/logrus"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 )
 
-func GetSNSStringAttribute(log *logrus.Entry, attribute interface{}) (string, error) {
+func GetSNSStringAttribute(ctx context.Context, attribute interface{}) (string, error) {
+	log := logger.FromContext(ctx)
 	log.Infof("read sns attribute value: %v", attribute)
 	v, ok := attribute.(map[string]interface{})
 	if ok {

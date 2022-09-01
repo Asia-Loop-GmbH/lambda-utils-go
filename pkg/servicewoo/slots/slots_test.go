@@ -4,18 +4,18 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo/slots"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicewoo/slots"
 )
 
 func TestGetSlots_Success(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	s, err := slots.GetSlots(logger.NewEmptyLogger(), context.TODO(), "dev")
-
-	Expect(err).To(BeNil())
-	Expect(s).NotTo(BeNil())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	s, err := slots.GetSlots(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, s)
 }

@@ -4,42 +4,44 @@ import (
 	"log"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	utils "github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/random"
+	utils "github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/random"
 )
 
 func TestRandomString_Success(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
 
 	s := utils.String(10, true, true, true)
 	log.Printf(s)
-	Expect(len(s)).To(Equal(10))
+	assert.Equal(t, 10, len(s))
 }
 
 func TestRandomString_Different(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
+	if testing.Short() {
+		t.Skip()
+	}
 
 	exists := map[string]bool{}
 
 	for i := 0; i < 1000000; i++ {
 		s := utils.String(10, true, true, true)
 		_, ok := exists[s]
-		Expect(ok).To(BeFalse())
+		assert.False(t, ok)
 		exists[s] = true
 	}
 }
 
 func TestRandomString_Different_OrderID(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
+	if testing.Short() {
+		t.Skip()
+	}
 
 	exists := map[string]bool{}
 
 	for i := 0; i < 1000000; i++ {
 		s := utils.String(8, false, true, true)
 		_, ok := exists[s]
-		Expect(ok).To(BeFalse())
+		assert.False(t, ok)
 		exists[s] = true
 	}
 }

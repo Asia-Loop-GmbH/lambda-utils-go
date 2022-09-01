@@ -1,0 +1,25 @@
+name: Build
+on:
+  pull_request:
+    branches:
+      - main
+      - v4
+  push:
+    branches:
+      - main
+      - v4
+
+env:
+  CGO_ENABLED: 0
+
+jobs:
+  test:
+    name: gh-action-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+      - name: Test
+        run: go test ./... -short

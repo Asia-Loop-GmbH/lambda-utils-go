@@ -1,21 +1,24 @@
 package normalizer
 
 import (
+	"context"
 	"regexp"
 	"strings"
 
 	"github.com/Masterminds/goutils"
+	"github.com/nam-truong-le/lambda-utils-go/pkg/logger"
 	"github.com/nyaruka/phonenumbers"
-	"github.com/sirupsen/logrus"
 )
 
-func Email(log *logrus.Entry, email string) string {
+func Email(ctx context.Context, email string) string {
+	log := logger.FromContext(ctx)
 	result := strings.ToLower(email)
 	log.Infof("normalized email: '%s' -> '%s'", email, result)
 	return result
 }
 
-func PhoneNumber(log *logrus.Entry, phone string) string {
+func PhoneNumber(ctx context.Context, phone string) string {
+	log := logger.FromContext(ctx)
 	parsed, err := phonenumbers.Parse(phone, "DE")
 	if err != nil {
 		log.Warnf("could not normalize phone '%s', return original", phone)
@@ -26,13 +29,14 @@ func PhoneNumber(log *logrus.Entry, phone string) string {
 	return result
 }
 
-func Name(log *logrus.Entry, name string) string {
-	result := normalizeWhitespace(goutils.CapitalizeFully(name, ' ', '-'))
+func Name(ctx context.Context, name string) string {
+	log := logger.FromContext(ctx)
+	result := normalizeWhitespace(ctx, goutils.CapitalizeFully(name, ' ', '-'))
 	log.Infof("normalized name: '%s' -> '%s'", name, result)
 	return result
 }
 
-func normalizeWhitespace(text string) string {
+func normalizeWhitespace(ctx context.Context, text string) string {
 	space, err := regexp.Compile(`\s+`)
 	if err != nil {
 		return text

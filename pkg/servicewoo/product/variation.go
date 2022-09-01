@@ -7,17 +7,15 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicewoo"
 )
 
-func GetVariation(log *logrus.Entry, ctx context.Context, stage string, productID int) ([]servicewoo.ProductVariation, error) {
-	woo, err := servicewoo.NewWoo(log, ctx, stage)
+func GetVariation(ctx context.Context, productID int) ([]servicewoo.ProductVariation, error) {
+	woo, err := servicewoo.NewWoo(ctx)
 	if err != nil {
 		return nil, err
 	}
-	url := woo.NewURL(log, fmt.Sprintf("/products/%d/variations", productID))
+	url := woo.NewURL(ctx, fmt.Sprintf("/products/%d/variations", productID))
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err

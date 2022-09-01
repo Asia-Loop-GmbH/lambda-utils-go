@@ -4,19 +4,21 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/dbadmin"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicemongo"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/dbadmin"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicemongo"
 )
 
 func TestAdminCollection(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	_, err := servicemongo.AdminCollection(logger.NewEmptyLogger(), context.Background(), "dev", dbadmin.CollectionOrder)
-	Expect(err).To(BeNil())
-	_, err = servicemongo.AdminCollection(logger.NewEmptyLogger(), context.Background(), "dev", dbadmin.CollectionOrder)
-	Expect(err).To(BeNil())
-	servicemongo.Disconnect(logger.NewEmptyLogger(), context.Background())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.Background(), commoncontext.FieldStage, "dev")
+	_, err := servicemongo.AdminCollection(ctx, dbadmin.CollectionOrder)
+	assert.NoError(t, err)
+	_, err = servicemongo.AdminCollection(ctx, dbadmin.CollectionOrder)
+	assert.NoError(t, err)
+	servicemongo.Disconnect(ctx)
 }

@@ -4,17 +4,18 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicewoo/product"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicewoo/product"
 )
 
 func TestGetVariation(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-
-	variations, err := product.GetVariation(logger.NewEmptyLogger(), context.TODO(), "dev", 24)
-	Expect(err).To(BeNil())
-	Expect(len(variations) > 0).To(BeTrue())
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.TODO(), commoncontext.FieldStage, "dev")
+	variations, err := product.GetVariation(ctx, 24)
+	assert.NoError(t, err)
+	assert.True(t, len(variations) > 0)
 }

@@ -4,10 +4,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicessm"
 	"github.com/mailjet/mailjet-apiv3-go/v3"
-	"github.com/sirupsen/logrus"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicessm"
 )
 
 var (
@@ -15,15 +13,15 @@ var (
 	client     *mailjet.Client
 )
 
-func newClient(log *logrus.Entry, ctx context.Context) (*mailjet.Client, error) {
+func newClient(ctx context.Context) (*mailjet.Client, error) {
 	var err error
 	initClient.Do(func() {
-		key, e := servicessm.GetParameter(log, ctx, "all", "/mailjet/key", false)
+		key, e := servicessm.GetGlobalParameter(ctx, "/mailjet/key", false)
 		if e != nil {
 			err = e
 			return
 		}
-		secret, e := servicessm.GetParameter(log, ctx, "all", "/mailjet/secret", true)
+		secret, e := servicessm.GetGlobalParameter(ctx, "/mailjet/secret", true)
 		if e != nil {
 			err = e
 			return

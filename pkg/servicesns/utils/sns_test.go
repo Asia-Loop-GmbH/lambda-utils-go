@@ -1,30 +1,26 @@
 package utils_test
 
 import (
+	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/servicesns/utils"
+	"github.com/asia-loop-gmbh/lambda-utils-go/v4/pkg/servicesns/utils"
 )
 
 func TestGetSNSStringAttribute_Success(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	v, err := utils.GetSNSStringAttribute(logger.NewEmptyLogger(), map[string]interface{}{"Value": "foo"})
-	Expect(err).To(BeNil())
-	Expect(v).To(Equal("foo"))
+	v, err := utils.GetSNSStringAttribute(context.Background(), map[string]interface{}{"Value": "foo"})
+	assert.NoError(t, err)
+	assert.Equal(t, "foo", v)
 }
 
 func TestGetSNSStringAttribute_NotString(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	_, err := utils.GetSNSStringAttribute(logger.NewEmptyLogger(), map[string]interface{}{"Value": 10})
-	Expect(err).ToNot(BeNil())
+	_, err := utils.GetSNSStringAttribute(context.Background(), map[string]interface{}{"Value": 10})
+	assert.Error(t, err)
 }
 
 func TestGetSNSStringAttribute_NoValue(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	_, err := utils.GetSNSStringAttribute(logger.NewEmptyLogger(), map[string]interface{}{})
-	Expect(err).ToNot(BeNil())
+	_, err := utils.GetSNSStringAttribute(context.Background(), map[string]interface{}{})
+	assert.Error(t, err)
 }

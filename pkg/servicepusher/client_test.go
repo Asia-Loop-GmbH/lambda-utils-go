@@ -4,22 +4,21 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/onsi/gomega"
-
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/internal/pkg/test"
-	"github.com/asia-loop-gmbh/lambda-utils-go/v3/pkg/logger"
+	commoncontext "github.com/nam-truong-le/lambda-utils-go/pkg/context"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetClient(t *testing.T) {
-	RegisterFailHandler(test.FailedHandler(t))
-	log := logger.NewEmptyLogger()
-	ctx := context.TODO()
+	if testing.Short() {
+		t.Skip()
+	}
+	ctx := context.WithValue(context.Background(), commoncontext.FieldStage, "dev")
 
-	client, err := getClient(log, ctx, "dev")
-	Expect(err).To(BeNil())
-	Expect(client).To(Not(BeNil()))
+	c, err := getClient(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
 
-	client, err = getClient(log, ctx, "dev")
-	Expect(err).To(BeNil())
-	Expect(client).To(Not(BeNil()))
+	c, err = getClient(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
 }
