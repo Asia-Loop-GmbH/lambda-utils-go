@@ -75,18 +75,22 @@ func getCollection(ctx context.Context, app, collection string) (*mongo.Collecti
 		log.Infof("first time init")
 		mongoHost, err := servicessm.GetGlobalParameter(ctx, "/mongo/host", false)
 		if err != nil {
+			log.Errorf("failed: %s", err)
 			return
 		}
 		mongoUsername, err := servicessm.GetStageParameter(ctx, fmt.Sprintf("/%s/mongo/username", app), false)
 		if err != nil {
+			log.Errorf("failed: %s", err)
 			return
 		}
 		mongoPassword, err := servicessm.GetStageParameter(ctx, fmt.Sprintf("/%s/mongo/password", app), true)
 		if err != nil {
+			log.Errorf("failed: %s", err)
 			return
 		}
 		mongoDatabase, err := servicessm.GetStageParameter(ctx, fmt.Sprintf("/%s/mongo/database", app), false)
 		if err != nil {
+			log.Errorf("failed: %s", err)
 			return
 		}
 		log.Infof("host = %s, user = %s, db = %s", *mongoHost, *mongoUsername, *mongoDatabase)
@@ -99,10 +103,12 @@ func getCollection(ctx context.Context, app, collection string) (*mongo.Collecti
 			}),
 		)
 		if err != nil {
+			log.Errorf("failed: %s", err)
 			return
 		}
 		err = c.Connect(ctx)
 		if err != nil {
+			log.Errorf("failed: %s", err)
 			return
 		}
 
